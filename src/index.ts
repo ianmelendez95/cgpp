@@ -4,40 +4,52 @@ import * as THREE from 'three';
 // type Vec3 = THREE.Vector3;
 
 class Vec3 {
-    vec: THREE.Vector3;
+    x: number;
+    y: number;
+    z: number;
 
     constructor (x_or_vec: number | Vec3 | THREE.Vector3, y?: number, z?: number) {
         if (typeof x_or_vec === 'number') {
-            this.vec = new THREE.Vector3(x_or_vec, y, z);
-        } else if (x_or_vec instanceof Vec3) {
-            this.vec = x_or_vec.vec;
+            this.x = x_or_vec;
+            this.y = y!;
+            this.z = z!;
         } else {
-            this.vec = x_or_vec;
+            this.x = x_or_vec.x;
+            this.y = x_or_vec.y;
+            this.z = x_or_vec.z;
         }
     }
 
+    static fromThree(threeVec: THREE.Vector3): Vec3 {
+        return new Vec3(threeVec);
+    }
+
+    toThree(): THREE.Vector3 {
+        return new THREE.Vector3(this.x, this.y, this.z);
+    }
+
     add(that: Vec3) {
-        return new Vec3(this.vec.clone().add(that.vec));
+        return Vec3.fromThree(this.toThree().add(that.toThree()));
     }
 
     sub(that: Vec3) {
-        return new Vec3(this.vec.clone().sub(that.vec));
+        return Vec3.fromThree(this.toThree().sub(that.toThree()));
     }
 
     dot(that: Vec3) : number{
-        return this.vec.clone().dot(that.vec);
+        return this.toThree().dot(that.toThree());
     }
 
     cross(that: Vec3) {
-        return new Vec3(this.vec.clone().cross(that.vec));
+        return Vec3.fromThree(this.toThree().cross(that.toThree()));
     }
 
     divideScalar(scalar: number) {
-        return new Vec3(this.vec.clone().divideScalar(scalar));
+        return Vec3.fromThree(this.toThree().divideScalar(scalar));
     }
 
     multiplyScalar(scalar: number) {
-        return new Vec3(this.vec.clone().multiplyScalar(scalar));
+        return Vec3.fromThree(this.toThree().multiplyScalar(scalar));
     }
 }
 
@@ -60,8 +72,6 @@ function rayTriangleIntersection(
     d: Vec3
 ): Result {
     const n = (B.sub(A).cross(C.sub(A))); // normal to the triangle (not unit)
-
-    const A_to_B = B.sub(A);
 
     let AB_T = n.cross(B.sub(A));
     AB_T = AB_T.divideScalar(C.sub(A).dot(AB_T));
@@ -91,6 +101,8 @@ function rayTriangleIntersection(
         : {result: 'OUTSIDE_TRIANGLE', alpha, beta, phi};
 }
 
+// Ray above A pointing down
+
 const A = new Vec3(0, 0, 0);
 const B = new Vec3(1, 0, 0);
 const C = new Vec3(0, 0, 1);
@@ -98,6 +110,16 @@ const C = new Vec3(0, 0, 1);
 const P = new Vec3(0, 1, 0);
 
 const d = new Vec3(0, -1, 0);
+
+// Ray above C pointing down
+
+// const A = new Vec3(0, 0, 0);
+// const B = new Vec3(1, 0, 0);
+// const C = new Vec3(0, 0, 1);
+//
+// const P = new Vec3(0, 1, 1);
+//
+// const d = new Vec3(0, -1, 0);
 
 console.log(`Result: ${JSON.stringify(rayTriangleIntersection(
     A, B, C, P, d

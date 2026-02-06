@@ -4,10 +4,12 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "start": "ts-node src/index.ts"
   },
   "dependencies": {
-    "three": "^0.182.0"
+    "three": "^0.182.0",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/three": "^0.182.0",
