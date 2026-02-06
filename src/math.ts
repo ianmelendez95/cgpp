@@ -111,32 +111,35 @@ export function rayTriangleIntersection(
     {a: A, b: B, c: C}: Triangle,
     {P, d}: Ray
 ): Result {
-    const n = (B.sub(A).cross(C.sub(A))); // normal to the triangle (not unit)
+    const n = (B.sub(A)).cross(C.sub(A));
 
-    let AB_T = n.cross(B.sub(A));
-    AB_T = AB_T.divideScalar(C.sub(A).dot(AB_T));
-
-    let AC_T = n.cross(A.sub(C));
-    AC_T = AC_T.divideScalar(B.sub(A).dot(AC_T));
-
-    const u = n.dot(d);
-    if (Math.abs(u) < Number.EPSILON) {
+    if (d.dot(n) < Number.EPSILON) {
+        // would be near zero division later
         return {result: 'UNSTABLE'};
     }
 
-    const t = ((A.sub(P)).dot(n)) / u;
+    const t = (A.sub(P).dot(n)) / d.dot(n);
+
     if (t < 0) {
         return {result: 'RAY_MISSES_PLANE'};
     }
 
     const Q = P.add(d.multiplyScalar(t));
-    const beta = (Q.sub(A)).dot(AC_T);
-    const phi = (Q.sub(A)).dot(AB_T);
+
+    let AB_T = n.cross(B.sub(A));
+    AB_T = AB_T.divideScalar(C.sub(A).dot(AB_T));
+
+    let AC_T = C.sub(A).cross(n);
+    AC_T = AC_T.divideScalar(B.sub(A).dot(AC_T));
+
+    const phi = Q.sub(A).dot(AB_T);
+    const beta = Q.sub(A).dot(AB_T);
     const alpha = 1 - (phi + beta);
 
-    const inside = (coord: number) => 0 <= coord && coord <= 1;
-
-    return (inside(alpha) && inside(beta) && inside(phi))
-        ? {result: 'INSIDE_TRIANGLE', alpha, beta, phi}
-        : {result: 'OUTSIDE_TRIANGLE', alpha, beta, phi};
+    return {
+        result: Math.min(alpha, phi, beta) < 0 || Math.max(alpha, phi, beta) > 1 ? 'OUTSIDE_TRIANGLE' : 'INSIDE_TRIANGLE',
+        alpha,
+        beta,
+        phi
+    }
 }
