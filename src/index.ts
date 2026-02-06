@@ -1,4 +1,4 @@
-import {Triangle, Vec3, rayTriangleIntersection} from './math';
+import {Triangle, Vec3, rayTriangleIntersection} from './math.js';
 
 // Ray above A pointing down
 

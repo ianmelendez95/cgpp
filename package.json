@@ -3,15 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
+  "type": "module",
   "scripts": {
     "build": "tsc",
-    "start": "ts-node src/index.ts",
+    "start": "npm run build && node dist/index.js",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
-    "three": "^0.182.0",
-    "ts-node": "^10.9.2"
+    "three": "^0.182.0"
   },
   "devDependencies": {
     "@types/three": "^0.182.0",

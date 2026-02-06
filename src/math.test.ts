@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import * as THREE from 'three';
-import { rayTriangleIntersection, Triangle, Vec3, vec3ToString } from './math';
+import { rayTriangleIntersection, Triangle, Vec3, vec3ToString } from './math.js';
 
 function expectClose(actual: number, expected: number, epsilon = 1e-9) {
   expect(Math.abs(actual - expected)).toBeLessThanOrEqual(epsilon);
