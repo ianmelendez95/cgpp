@@ -97,8 +97,8 @@ function rayTriangleIntersection(
     }
 
     const Q = P.add(d.multiplyScalar(t));
-    const phi = (Q.sub(C)).dot(AC_T);
-    const beta = (Q.sub(B)).dot(AB_T);
+    const beta = (Q.sub(A)).dot(AC_T);
+    const phi = (Q.sub(A)).dot(AB_T);
     const alpha = 1 - (phi + beta);
 
     const inside = (coord: number) => 0 <= coord && coord <= 1;
@@ -121,13 +121,24 @@ const ray_down_to_A = {
     d: new Vec3(0, -1, 0) // pointing down
 }
 
+const ray_down_to_B = {
+    P: new Vec3(1, 1, 0), // above B
+    d: new Vec3(0, -1, 0) // pointing down
+}
+
 const ray_down_to_C = {
     P: new Vec3(0, 1, 1), // above C
     d: new Vec3(0, -1, 0) // pointing down
 }
 
+const ray_down_to_mid_AB = {
+    P: new Vec3(0.5, 1, 0), // above midpoint of A and B
+    d: new Vec3(0, -1, 0) // pointing down
+}
+
+
 console.log(`Result: ${JSON.stringify(rayTriangleIntersection(
     triangle, 
-    ray_down_to_C
+    ray_down_to_mid_AB
 ))}`);
 
