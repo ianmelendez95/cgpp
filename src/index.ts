@@ -53,6 +53,17 @@ class Vec3 {
     }
 }
 
+type Triangle = {
+    A: Vec3,
+    B: Vec3,
+    C: Vec3
+}
+
+type Ray = {
+    P: Vec3,
+    d: Vec3
+};
+
 type Result =
     'UNSTABLE' |
     'RAY_MISSES_PLANE' |
@@ -64,12 +75,8 @@ function vec3ToString(vec3: THREE.Vector3): string {
 }
 
 function rayTriangleIntersection(
-    A: Vec3,
-    B: Vec3,
-    C: Vec3,
-
-    P: Vec3,
-    d: Vec3
+    {A, B, C}: Triangle,
+    {P, d}: Ray
 ): Result {
     const n = (B.sub(A).cross(C.sub(A))); // normal to the triangle (not unit)
 
@@ -103,25 +110,24 @@ function rayTriangleIntersection(
 
 // Ray above A pointing down
 
-const A = new Vec3(0, 0, 0);
-const B = new Vec3(1, 0, 0);
-const C = new Vec3(0, 0, 1);
+const triangle = {
+    A: new Vec3(0, 0, 0),
+    B: new Vec3(1, 0, 0),
+    C: new Vec3(0, 0, 1)
+}
 
-const P = new Vec3(0, 1, 0);
+const ray_down_to_A = {
+    P: new Vec3(0, 1, 0), // above A
+    d: new Vec3(0, -1, 0) // pointing down
+}
 
-const d = new Vec3(0, -1, 0);
-
-// Ray above C pointing down
-
-// const A = new Vec3(0, 0, 0);
-// const B = new Vec3(1, 0, 0);
-// const C = new Vec3(0, 0, 1);
-//
-// const P = new Vec3(0, 1, 1);
-//
-// const d = new Vec3(0, -1, 0);
+const ray_down_to_C = {
+    P: new Vec3(0, 1, 1), // above C
+    d: new Vec3(0, -1, 0) // pointing down
+}
 
 console.log(`Result: ${JSON.stringify(rayTriangleIntersection(
-    A, B, C, P, d
+    triangle, 
+    ray_down_to_C
 ))}`);
 
