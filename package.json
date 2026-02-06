@@ -5,7 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "three": "^0.182.0",
@@ -13,6 +15,7 @@
   },
   "devDependencies": {
     "@types/three": "^0.182.0",
+    "vitest": "^2.1.9",
     "typescript": "^5.5.3"
   },
   "private": true
