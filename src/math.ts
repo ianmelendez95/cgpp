@@ -113,7 +113,7 @@ export function rayTriangleIntersection(
 ): Result {
     const n = (B.sub(A)).cross(C.sub(A));
 
-    if (d.dot(n) < Number.EPSILON) {
+    if (Math.abs(d.dot(n)) < Number.EPSILON) {
         // would be near zero division later
         return {result: 'UNSTABLE'};
     }
