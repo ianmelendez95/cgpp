@@ -133,7 +133,7 @@ export function rayTriangleIntersection(
     AC_T = AC_T.divideScalar(B.sub(A).dot(AC_T));
 
     const phi = Q.sub(A).dot(AB_T);
-    const beta = Q.sub(A).dot(AB_T);
+    const beta = Q.sub(A).dot(AC_T);
     const alpha = 1 - (phi + beta);
 
     return {
