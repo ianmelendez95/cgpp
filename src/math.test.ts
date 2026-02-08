@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import * as THREE from 'three';
-import { vec3ToString } from './math.js';
+import { vec3ToString } from './math';
 
 describe('vec3ToString', () => {
   it('formats a THREE.Vector3 as [ x y z ]', () => {

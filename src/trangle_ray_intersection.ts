@@ -1,4 +1,4 @@
-import {Vec3} from './math.js';
+import {Vec3} from './math';
 import * as THREE from 'three';
 
 export class Triangle {

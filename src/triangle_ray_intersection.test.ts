@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { Vec3 } from './math.js';
-import { rayTriangleIntersection, Triangle } from './trangle_ray_intersection.js';
+import { Vec3 } from './math';
+import { rayTriangleIntersection, Triangle } from './trangle_ray_intersection';
 
 describe('rayTriangleIntersection', () => {
   it('returns INSIDE_TRIANGLE for a clear hit', () => {
