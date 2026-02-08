@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import * as THREE from 'three';
 import { vec3ToString } from './math';
 

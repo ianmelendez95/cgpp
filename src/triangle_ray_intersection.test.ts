@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { Vec3 } from './math';
 import { rayTriangleIntersection, Triangle } from './trangle_ray_intersection';
 
