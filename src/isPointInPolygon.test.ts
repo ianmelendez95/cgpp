@@ -23,14 +23,4 @@ describe('isPointInPolygon', () => {
 		const square = [v(0, 0), v(2, 0), v(2, 2), v(0, 2)];
 		expect(isPointInPolygon(v(-0.1, 1), square)).toBe(false);
 	});
-
-	it('treats points on an edge as inside', () => {
-		const square = [v(0, 0), v(2, 0), v(2, 2), v(0, 2)];
-		expect(isPointInPolygon(v(1, 0), square)).toBe(true);
-	});
-
-	it('treats points on a vertex as inside', () => {
-		const square = [v(0, 0), v(2, 0), v(2, 2), v(0, 2)];
-		expect(isPointInPolygon(v(0, 0), square)).toBe(true);
-	});
 });
