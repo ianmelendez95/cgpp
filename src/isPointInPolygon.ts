@@ -1,9 +1,16 @@
 import { Vec2 } from './math';
+import _ from 'lodash';
 
 export default function isPointInPolygon(point: Vec2, polygon: Vec2[]): boolean {
+    return arePointsInPolygon([point], polygon);
+}
+
+export function arePointsInPolygon(points: Vec2[], polygon: Vec2[]): boolean {
     if (polygon.length < 2) {
         throw new Error("Polygon must have at least three vertices");
     }
+
+    const point = points[0];
 
     const edgeVectors = [];
     for (let vertexI = 0; vertexI < polygon.length; vertexI++) {
@@ -24,4 +31,8 @@ export default function isPointInPolygon(point: Vec2, polygon: Vec2[]): boolean 
     }
 
     return true;
+}
+
+function pointsCrossY(y: number, p1: Vec2, p2: Vec2) {
+    return ((p1.y - y) * (p2.y - y)) < 0;
 }

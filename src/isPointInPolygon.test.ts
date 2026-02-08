@@ -24,3 +24,4 @@ describe('isPointInPolygon', () => {
 		expect(isPointInPolygon(v(-0.1, 1), square)).toBe(false);
 	});
 });
+

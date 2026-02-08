@@ -11,6 +11,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@types/lodash": "^4.17.23",
+    "lodash": "^4.17.23",
     "three": "^0.182.0"
   },
   "devDependencies": {
