@@ -51,7 +51,7 @@ export class Vec2 {
     }
 
     toString() {
-        return `[ ${this.x} ${this.y} ${this.z} ]`
+        return `[ ${this.x} ${this.y} ]`
     }
 }
 
