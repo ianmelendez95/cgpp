@@ -1,4 +1,4 @@
-import {Vec3} from './math';
+import { Vec3 } from './math/Vec3';
 import * as THREE from 'three';
 
 export class Triangle {

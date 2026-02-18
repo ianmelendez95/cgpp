@@ -1,4 +1,4 @@
-import { Vec3 } from './math';
+import { Vec3 } from './math/Vec3';
 import { rayTriangleIntersection, Triangle } from './trangle_ray_intersection';
 
 describe('rayTriangleIntersection', () => {

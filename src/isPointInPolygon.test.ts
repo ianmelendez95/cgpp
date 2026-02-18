@@ -1,5 +1,5 @@
 import isPointInPolygon from './isPointInPolygon';
-import { Vec2 } from './math';
+import { Vec2 } from './math/Vec2';
 
 const v = (x: number, y: number) => new Vec2(x, y);
 

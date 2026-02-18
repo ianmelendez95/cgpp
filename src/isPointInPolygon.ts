@@ -1,4 +1,4 @@
-import { Vec2 } from './math';
+import { Vec2 } from './math/Vec2';
 import _ from 'lodash';
 
 export default function isPointInPolygon(point: Vec2, polygon: Vec2[]): boolean {
