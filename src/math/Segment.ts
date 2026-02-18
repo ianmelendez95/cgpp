@@ -8,4 +8,8 @@ export default class Segment {
         this.start = start;
         this.end = end;
     }
+
+    flipped(): Segment {
+        return new Segment(this.end, this.start);
+    }
 }
