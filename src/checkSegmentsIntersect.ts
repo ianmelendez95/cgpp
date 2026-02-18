@@ -18,5 +18,13 @@ export default function checkSegmentsIntersect(seg1: Segment, seg2: Segment): bo
 
     const t = (-v.dot(n)) / (u.dot(n)) 
 
-    return 0 <= t && t <= 1;
+    if (t < 0 || 1 < t) {
+        // does not land within seg1, so we immediately know it's not an intersection
+        return false;
+    }
+
+    // otherwise, find out where along P and Q it is and whether it's inside
+    const I = P.multiplyScalar(t).add(Q.multiplyScalar(1 - t));
+
+    return Math.min(seg2.start.x, seg2.end.x) < I.x && I.x < Math.max(seg2.start.x, seg2.end.x);
 }
