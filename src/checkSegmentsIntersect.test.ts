@@ -14,7 +14,7 @@ describe('checkSegmentsIntersect', () => {
             new Vec2(2, 0)
         );
 
-        expect(checkSegmentsIntersect(vSeg, hSeg)).toBeTruthy();
+        expect(checkSegmentsIntersect(vSeg, hSeg)).toEqual(new Vec2(0, 0));
     })
 
     it('positive for simple intersection flipped', () => {
@@ -28,7 +28,7 @@ describe('checkSegmentsIntersect', () => {
             new Vec2(2, 0)
         ).flipped();
 
-        expect(checkSegmentsIntersect(vSeg, hSeg)).toBeTruthy();
+        expect(checkSegmentsIntersect(vSeg, hSeg)).toEqual(new Vec2(0, 0));
     })
 
     it('negative for simple non-intersection', () => {
@@ -42,7 +42,7 @@ describe('checkSegmentsIntersect', () => {
             new Vec2(4, 4)
         );
 
-        expect(checkSegmentsIntersect(vSeg, hSeg)).toBeFalsy();
+        expect(checkSegmentsIntersect(vSeg, hSeg)).toBe(false);
     })
 
     it('negative for perp non-intersection 1', () => {
@@ -56,7 +56,7 @@ describe('checkSegmentsIntersect', () => {
             new Vec2(4, 0)
         );
 
-        expect(checkSegmentsIntersect(vSeg, hSeg)).toBeFalsy();
+        expect(checkSegmentsIntersect(vSeg, hSeg)).toBe(false);
     })
 
     it('negative for perp non-intersection 1', () => {
@@ -70,7 +70,7 @@ describe('checkSegmentsIntersect', () => {
             new Vec2(2, 0)
         );
 
-        expect(checkSegmentsIntersect(vSeg, hSeg)).toBeFalsy();
+        expect(checkSegmentsIntersect(vSeg, hSeg)).toBe(false);
     })
 
     it('negative for disjoint parallel', () => {
@@ -84,7 +84,7 @@ describe('checkSegmentsIntersect', () => {
             new Vec2(2, 2)
         );
 
-        expect(checkSegmentsIntersect(lSeg, rSeg)).toBeFalsy();
+        expect(checkSegmentsIntersect(lSeg, rSeg)).toBe(false);
     })
 
     it('negative for touching parallel', () => {
@@ -98,7 +98,7 @@ describe('checkSegmentsIntersect', () => {
             new Vec2(0, 4)
         );
 
-        expect(checkSegmentsIntersect(lSeg, rSeg)).toBeFalsy();
+        expect(checkSegmentsIntersect(lSeg, rSeg)).toBe(false);
     })
 
     it('positive for overlap parallel', () => {
@@ -112,6 +112,6 @@ describe('checkSegmentsIntersect', () => {
             new Vec2(0, 3)
         );
 
-        expect(checkSegmentsIntersect(lSeg, rSeg)).toBeTruthy();
+        expect(checkSegmentsIntersect(lSeg, rSeg)).toBe(true);
     })
 })

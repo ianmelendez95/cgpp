@@ -1,7 +1,7 @@
 import Segment from "./math/Segment";
 import { Vec2 } from "./math/Vec2";
 
-export default function checkSegmentsIntersect(seg1: Segment, seg2: Segment): boolean {
+export default function checkSegmentsIntersect(seg1: Segment, seg2: Segment): boolean | Vec2 {
     const P = seg1.start;
     const Q = seg1.end;
 
@@ -51,7 +51,7 @@ export default function checkSegmentsIntersect(seg1: Segment, seg2: Segment): bo
     // otherwise, find out where along P and Q it is and whether it's inside
     const I = P.multiplyScalar(t).add(Q.multiplyScalar(1 - t));
 
-    return withinNonInclusive(I.x, seg2.start.x, seg2.end.x);
+    return withinNonInclusive(I.x, seg2.start.x, seg2.end.x) ? I : false;
 }
 
 function withinNonInclusive(x: number, a: number, b: number): boolean {
