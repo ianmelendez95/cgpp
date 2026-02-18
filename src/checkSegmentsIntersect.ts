@@ -16,9 +16,23 @@ export default function checkSegmentsIntersect(seg1: Segment, seg2: Segment): bo
         R.x - S.x
     );
 
-    const t = (-v.dot(n)) / (u.dot(n)) 
+    const u_dot_n = u.dot(n);
+    if (u_dot_n == 0) {
+        // parallel, so handle specially
 
-    if (t < 0 || 1 < t) {
+        // first, we check if line PQ is on line RS, using implicit form of RS line {(X - R) `dot` n == 0} and P
+        const p_on_rs = P.sub(R).dot(n) == 0;
+        if (!p_on_rs) {
+            // lines are not incidental
+            return false;
+        }
+
+        return true;
+    }
+
+    const t = (-v.dot(n)) / u_dot_n 
+
+    if (!within_non_inclusive(t, 0, 1)) {
         // does not land within seg1, so we immediately know it's not an intersection
         return false;
     }
@@ -26,5 +40,9 @@ export default function checkSegmentsIntersect(seg1: Segment, seg2: Segment): bo
     // otherwise, find out where along P and Q it is and whether it's inside
     const I = P.multiplyScalar(t).add(Q.multiplyScalar(1 - t));
 
-    return Math.min(seg2.start.x, seg2.end.x) < I.x && I.x < Math.max(seg2.start.x, seg2.end.x);
+    return within_non_inclusive(I.x, seg2.start.x, seg2.end.x);
+}
+
+function within_non_inclusive(x: number, a: number, b: number): boolean {
+    return Math.min(a, b) < x && x < Math.max(a, b);
 }
