@@ -72,4 +72,46 @@ describe('checkSegmentsIntersect', () => {
 
         expect(checkSegmentsIntersect(vSeg, hSeg)).toBeFalsy();
     })
+
+    it('negative for disjoint parallel', () => {
+        const lSeg = new Segment(
+            new Vec2(0, 0),
+            new Vec2(0, 2)
+        );
+
+        const rSeg = new Segment(
+            new Vec2(2, 0),
+            new Vec2(2, 2)
+        );
+
+        expect(checkSegmentsIntersect(lSeg, rSeg)).toBeFalsy();
+    })
+
+    it('negative for touching parallel', () => {
+        const lSeg = new Segment(
+            new Vec2(0, 0),
+            new Vec2(0, 2)
+        );
+
+        const rSeg = new Segment(
+            new Vec2(0, 2),
+            new Vec2(0, 4)
+        );
+
+        expect(checkSegmentsIntersect(lSeg, rSeg)).toBeFalsy();
+    })
+
+    it('positive for overlap parallel', () => {
+        const lSeg = new Segment(
+            new Vec2(0, 0),
+            new Vec2(0, 2)
+        );
+
+        const rSeg = new Segment(
+            new Vec2(0, 1),
+            new Vec2(0, 3)
+        );
+
+        expect(checkSegmentsIntersect(lSeg, rSeg)).toBeTruthy();
+    })
 })
