@@ -18,6 +18,14 @@ export class Vec2 {
         return new Vec2(threeVec);
     }
 
+    static minXY(vec1: Vec2, vec2: Vec2) {
+        return vec1.compareXY(vec2) >= 0 ? vec1 : vec2;
+    }
+
+    static maxXY(vec1: Vec2, vec2: Vec2) {
+        return vec1.compareXY(vec2) <= 0 ? vec1 : vec2;
+    }
+
     withY(y: number) {
         return new Vec2(this.x, y);
     }
@@ -48,6 +56,24 @@ export class Vec2 {
 
     multiplyScalar(scalar: number) {
         return Vec2.fromThree(this.toThree().multiplyScalar(scalar));
+    }
+
+    compareXY(that: Vec2): number {
+        if (this.x < that.x) {
+            return 1;
+        } else if (this.x > that.x) {
+            return -1;
+        } else if (this.y < that.y) {
+            return 1;
+        } else if (this.y > that.y) {
+            return -1;
+        } else {
+            return 0;
+        }
+    }
+
+    isEqual(that: Vec2) {
+        return this.x === that.x && this.y === that.y;
     }
 
     toString() {

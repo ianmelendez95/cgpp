@@ -27,12 +27,23 @@ export default function checkSegmentsIntersect(seg1: Segment, seg2: Segment): bo
             return false;
         }
 
-        return true;
+        const minPQ = Vec2.minXY(P, Q);
+        const maxPQ = Vec2.maxXY(P, Q);
+
+        const minRS = Vec2.minXY(R, S);
+        const maxRS = Vec2.maxXY(R, S);
+
+        if (maxPQ <= minRS || maxRS <= minPQ) {
+            // PQ is 'before, after, or touching' RS 
+            return false;
+        } else {
+            return minRS < maxPQ || minPQ < maxRS;
+        }
     }
 
     const t = (-v.dot(n)) / u_dot_n 
 
-    if (!within_non_inclusive(t, 0, 1)) {
+    if (!withinNonInclusive(t, 0, 1)) {
         // does not land within seg1, so we immediately know it's not an intersection
         return false;
     }
@@ -40,9 +51,9 @@ export default function checkSegmentsIntersect(seg1: Segment, seg2: Segment): bo
     // otherwise, find out where along P and Q it is and whether it's inside
     const I = P.multiplyScalar(t).add(Q.multiplyScalar(1 - t));
 
-    return within_non_inclusive(I.x, seg2.start.x, seg2.end.x);
+    return withinNonInclusive(I.x, seg2.start.x, seg2.end.x);
 }
 
-function within_non_inclusive(x: number, a: number, b: number): boolean {
+function withinNonInclusive(x: number, a: number, b: number): boolean {
     return Math.min(a, b) < x && x < Math.max(a, b);
 }
