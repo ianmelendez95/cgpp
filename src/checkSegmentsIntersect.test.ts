@@ -17,6 +17,34 @@ describe('checkSegmentsIntersect', () => {
         expect(checkSegmentsIntersect(vSeg, hSeg)).toEqual(new Vec2(0, 0));
     })
 
+    it('negative for simple intersection on end', () => {
+        const vSeg = new Segment(
+            new Vec2(0, -2),
+            new Vec2(0, 2)
+        );
+
+        const hSeg = new Segment(
+            new Vec2(-2, 0),
+            new Vec2(0, 0)
+        );
+
+        expect(checkSegmentsIntersect(vSeg, hSeg)).toBe(false);
+    })
+
+    it('negative for simple intersection on end 2', () => {
+        const vSeg = new Segment(
+            new Vec2(0, -2),
+            new Vec2(0, 0)
+        );
+
+        const hSeg = new Segment(
+            new Vec2(-2, 0),
+            new Vec2(2, 0)
+        );
+
+        expect(checkSegmentsIntersect(vSeg, hSeg)).toBe(false);
+    })
+
     it('positive for simple intersection flipped', () => {
         const vSeg = new Segment(
             new Vec2(0, -2),
