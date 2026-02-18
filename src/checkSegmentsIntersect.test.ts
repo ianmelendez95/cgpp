@@ -45,7 +45,7 @@ describe('checkSegmentsIntersect', () => {
         expect(checkSegmentsIntersect(vSeg, hSeg)).toBeFalsy();
     })
 
-    it('negative for perp non-intersection', () => {
+    it('negative for perp non-intersection 1', () => {
         const vSeg = new Segment(
             new Vec2(0, -2),
             new Vec2(0, 2)
@@ -54,6 +54,20 @@ describe('checkSegmentsIntersect', () => {
         const hSeg = new Segment(
             new Vec2(2, 0),
             new Vec2(4, 0)
+        );
+
+        expect(checkSegmentsIntersect(vSeg, hSeg)).toBeFalsy();
+    })
+
+    it('negative for perp non-intersection 1', () => {
+        const vSeg = new Segment(
+            new Vec2(0, -4),
+            new Vec2(0, -2)
+        );
+
+        const hSeg = new Segment(
+            new Vec2(-2, 0),
+            new Vec2(2, 0)
         );
 
         expect(checkSegmentsIntersect(vSeg, hSeg)).toBeFalsy();
