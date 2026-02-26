@@ -12,7 +12,7 @@ export function arePointsInPolygon(points: Vec2[], polygon: Vec2[]): boolean {
 
     const point = points[0];
 
-    const edgeVectors = [];
+    // const edgeVectors = [];
     for (let vertexI = 0; vertexI < polygon.length; vertexI++) {
         const curVertexI = vertexI;
         const nextVertexI = (vertexI + 1) % polygon.length; // modulo for 'wrap around' logic
@@ -33,6 +33,6 @@ export function arePointsInPolygon(points: Vec2[], polygon: Vec2[]): boolean {
     return true;
 }
 
-function pointsCrossY(y: number, p1: Vec2, p2: Vec2) {
-    return ((p1.y - y) * (p2.y - y)) < 0;
-}
+// function pointsCrossY(y: number, p1: Vec2, p2: Vec2) {
+//     return ((p1.y - y) * (p2.y - y)) < 0;
+// }

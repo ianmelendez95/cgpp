@@ -4,7 +4,7 @@ export class Vec2 {
     x: number;
     y: number;
 
-    constructor(x_or_vec: number | Vec2 | THREE.Vector2, y?: number, z?: number) {
+    constructor(x_or_vec: number | Vec2 | THREE.Vector2, y?: number) {
         if (typeof x_or_vec === 'number') {
             this.x = x_or_vec;
             this.y = y!;

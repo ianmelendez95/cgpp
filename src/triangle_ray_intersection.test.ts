@@ -51,13 +51,13 @@ describe('rayTriangleIntersection', () => {
 
   const down = new Vec3(0, -1, 0);
 
-  function expectInsideTriangle(rayName: string, ray: { P: Vec3; d: Vec3 }) {
-    const res = rayTriangleIntersection(exampleTriangle, ray);
-    expect(typeof res, `${rayName} should return barycentric result`).toBe('object');
-    if (typeof res === 'object') {
-      expect(res.result, `${rayName} should be inside triangle`).toBe('INSIDE_TRIANGLE');
-    }
-  }
+  // function expectInsideTriangle(rayName: string, ray: { P: Vec3; d: Vec3 }) {
+  //   const res = rayTriangleIntersection(exampleTriangle, ray);
+  //   expect(typeof res, `${rayName} should return barycentric result`).toBe('object');
+  //   if (typeof res === 'object') {
+  //     expect(res.result, `${rayName} should be inside triangle`).toBe('INSIDE_TRIANGLE');
+  //   }
+  // }
 
   it('ray_down_to_A is inside the triangle', () => {
     const ray_down_to_A = { P: new Vec3(0, 1, 0), d: down };
@@ -115,6 +115,6 @@ describe('rayTriangleIntersection', () => {
   });
 });
 
-function expectClose(actual: number, expected: number, epsilon = 1e-9) {
-  expect(Math.abs(actual - expected)).toBeLessThanOrEqual(0.01);
+function expectClose(actual: number, expected: number, epsilon = 0.01) {
+  expect(Math.abs(actual - expected)).toBeLessThanOrEqual(epsilon);
 }
