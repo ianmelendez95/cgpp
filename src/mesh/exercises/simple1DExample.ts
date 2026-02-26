@@ -22,6 +22,7 @@ function renderPoints(points: Vector3[]) {
     camera.lookAt(0, 0, 0);
 
     const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xffffff);
 
     const material = new THREE.LineBasicMaterial({color: 0x0000ff});
 
