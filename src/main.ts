@@ -14,7 +14,9 @@ scene.add( cube );
 
 camera.position.z = 5;
 
-function animate(_time: number) {
+function animate(time: number) {
+    cube.rotation.x = time / 2000;
+    cube.rotation.y = time / 1000;
     renderer.render(scene, camera);
 }
 
