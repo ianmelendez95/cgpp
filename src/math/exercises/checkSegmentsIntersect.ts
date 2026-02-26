@@ -1,5 +1,5 @@
-import Segment from "./math/Segment";
-import { Vec2 } from "./math/Vec2";
+import Segment from "../Segment";
+import { Vec2 } from "../Vec2";
 
 export type IntTriple = {x: number, y: number, w: number};
 

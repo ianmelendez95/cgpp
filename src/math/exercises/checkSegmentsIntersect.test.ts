@@ -1,6 +1,6 @@
 import checkSegmentsIntersect, { intTripleToPoint } from "./checkSegmentsIntersect";
-import Segment from "./math/Segment"
-import { Vec2 } from "./math/Vec2"
+import Segment from "../Segment"
+import { Vec2 } from "../Vec2"
 
 describe('checkSegmentsIntersect', () => {
     it('positive for simple intersection', () => {
