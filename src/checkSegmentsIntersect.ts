@@ -1,7 +1,18 @@
 import Segment from "./math/Segment";
 import { Vec2 } from "./math/Vec2";
 
-export default function checkSegmentsIntersect(seg1: Segment, seg2: Segment): boolean | Vec2 {
+export type IntTriple = {x: number, y: number, w: number};
+
+export function intTripleToPoint(triple: boolean | IntTriple): Vec2 {
+    if (typeof triple !== 'object') {
+        throw new Error('illegal arg');
+    }
+
+    const {x, y, w} = triple;
+    return new Vec2(x/w, y/w);
+}
+
+export default function checkSegmentsIntersect(seg1: Segment, seg2: Segment): boolean | {x: number, y: number, w: number} {
     const P = seg1.start;
     const Q = seg1.end;
 
@@ -41,17 +52,28 @@ export default function checkSegmentsIntersect(seg1: Segment, seg2: Segment): bo
         }
     }
 
-    const t = (-v.dot(n)) / u_dot_n 
+    let t_n = -v.dot(n);
+    let t_d = u_dot_n;
 
-    if (!withinNonInclusive(t, 0, 1)) {
-        // does not land within seg1, so we immediately know it's not an intersection
+    if (t_n === 0 || ((t_n >= 0) != (t_d >= 0))) {
+        // t is zero or negative, so no intersection
         return false;
+    } else if (Math.abs(t_n) > Math.abs(t_d)) {
+        // t is greater than one, so no intersection
+        return false;
+    } else if (t_n < 0 && t_d < 0) {
+        // both negative, so make them positive for aesthetics
+        t_n = Math.abs(t_n);
+        t_d = Math.abs(t_d);
     }
 
     // otherwise, find out where along P and Q it is and whether it's inside
-    const I = P.multiplyScalar(t).add(Q.multiplyScalar(1 - t));
+    // const I = P.multiplyScalar(t).add(Q.multiplyScalar(1 - t));
+    const I_prime = P.sub(Q).multiplyScalar(t_n).add(Q.multiplyScalar(t_d));
 
-    return withinNonInclusive(I.x, seg2.start.x, seg2.end.x) ? I : false;
+    return withinNonInclusive(I_prime.x, seg2.start.x * t_d, seg2.end.x * t_d) 
+        ? {x: I_prime.x, y: I_prime.y, w: t_d} 
+        : false;
 }
 
 function withinNonInclusive(x: number, a: number, b: number): boolean {

@@ -1,4 +1,4 @@
-import checkSegmentsIntersect from "./checkSegmentsIntersect";
+import checkSegmentsIntersect, { intTripleToPoint } from "./checkSegmentsIntersect";
 import Segment from "./math/Segment"
 import { Vec2 } from "./math/Vec2"
 
@@ -14,7 +14,7 @@ describe('checkSegmentsIntersect', () => {
             new Vec2(2, 0)
         );
 
-        expect(checkSegmentsIntersect(vSeg, hSeg)).toEqual(new Vec2(0, 0));
+        expect(intTripleToPoint(checkSegmentsIntersect(vSeg, hSeg))).toEqual(new Vec2(0, 0));
     })
 
     it('negative for simple intersection on end', () => {
@@ -56,7 +56,7 @@ describe('checkSegmentsIntersect', () => {
             new Vec2(2, 0)
         ).flipped();
 
-        expect(checkSegmentsIntersect(vSeg, hSeg)).toEqual(new Vec2(0, 0));
+        expect(intTripleToPoint(checkSegmentsIntersect(vSeg, hSeg))).toEqual(new Vec2(0, 0));
     })
 
     it('negative for simple non-intersection', () => {
