@@ -1,3 +1,3 @@
-import ominousTriangle from './three/ominousTriangle';
+import simple1DExample from './mesh/exercises/simple1DExample';
 
-ominousTriangle();
+simple1DExample();
