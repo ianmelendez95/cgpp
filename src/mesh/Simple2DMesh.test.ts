@@ -1,9 +1,22 @@
 import Simple1DMesh from "./Simple1DMesh"
 
 describe('Simple1DMesh', () => {
-    test('deleteIdx', () => {
-        expect(Simple1DMesh.deleteIdx(['a', 'b', 'c'], 0)).toEqual(['c', 'b'])
-        expect(Simple1DMesh.deleteIdx(['a', 'b', 'c'], 1)).toEqual(['a', 'c'])
-        expect(Simple1DMesh.deleteIdx(['a', 'b', 'c'], 2)).toEqual(['a', 'b'])
-    })
+    test('deleteIdx 0', () => {
+        testDelete(['a', 'b', 'c'], 0, ['c', 'b']);
+    });
+
+    test('deleteIdx 1', () => {
+        testDelete(['a', 'b', 'c'], 1, ['a', 'c']);
+    });
+
+    test('deleteIdx 2', () => {
+        testDelete(['a', 'b', 'c'], 2, ['a', 'b']);
+    });
+
+    function testDelete(arr: any[], idx: number, expectedArr: any[]) {
+        const testArray = [...arr];
+        const deletedValue = Simple1DMesh.deleteIdx(testArray, idx);
+        expect(testArray).toEqual(expectedArr);
+        expect(deletedValue).toEqual(arr[idx]);
+    }
 })

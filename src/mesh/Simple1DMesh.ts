@@ -77,16 +77,15 @@ export default class Simple1DMesh {
         console.table(this.neighbors.map(([e1, e2]) => ({edge: `(${e1}, ${e2})`})));
     }
 
-    static deleteIdx<T>(arr: T[], idx: number): T[] {
-        if (arr.length < 2 || idx < 0 || idx > arr.length - 1) {
-            // at end or OOB, noop
-            return arr;
+    static deleteIdx<T>(arr: T[], idx: number): T {
+        if (idx < 0 || idx > arr.length - 1) {
+            throw new Error('OOB');
         } else if (idx === arr.length - 1) {
-            arr.pop();
-            return arr;
+            return arr.pop()!;
         }
 
+        const value = arr[idx];
         arr[idx] = arr.pop()!;
-        return arr;
+        return value;
     }
 }
