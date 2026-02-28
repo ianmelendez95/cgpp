@@ -3,35 +3,16 @@ import {Vector2, Vector3} from 'three';
 import CGPP1DMesh from '../Simple1DMesh';
 
 export default function simple1DExample() {
-    // const vertices = [
-    //     new Vector2(0, 0),
-    //     new Vector2(0.5, 0),
-    //     new Vector2(1.5, 1),
-    //     new Vector2(0, 2.0),
-    //     new Vector2(3, 0),
-    //     new Vector2(4, 0),
-    // ];
+    const mesh = getGCPPExample1();
 
-    // const edges: [number, number][] = [
-    //     [1, 2],
-    //     [2, 3],
-    //     [3, 4],
-    //     [4, 1],
-    //     [5, 6]
-    // ];
+    console.log("TRACE mesh");
+    mesh.printDebug();
 
-    // const vertices = new Map([
-    //     [1, new Vector2(-10, 0)],
-    //     [2, new Vector2(0, 10)],
-    //     [3, new Vector2(10, 0)]
-    // ])
+    const points = mesh.toPoints();
+    renderPoints(points);
+}
 
-    // const edges = new Map<number, [number, number]>([
-    //     [1, [1, 2]],
-    //     [2, [2, 3]],
-    //     [3, [3, 1]]
-    // ])
-
+function getGCPPExample1(): CGPP1DMesh {
     const mesh = new CGPP1DMesh();
     mesh.insertVertex(0, 0);
     mesh.insertVertex(0.5, 0);
@@ -45,8 +26,7 @@ export default function simple1DExample() {
 
     mesh.verifyManifold();
 
-    console.log("TRACE mesh");
-    mesh.printDebug();
+    return mesh;
 
     // const points = [
     //     new THREE.Vector2(-10, 0),
@@ -54,12 +34,6 @@ export default function simple1DExample() {
     //     new THREE.Vector2(10, 0),
     //     new THREE.Vector2(-10, 0),
     // ];
-
-    const points = mesh.toPoints();
-
-    // console.log(JSON.stringify(points));
-
-    renderPoints(points);
 }
 
 function renderPoints(points: Vector3[] | Vector2[]) {
