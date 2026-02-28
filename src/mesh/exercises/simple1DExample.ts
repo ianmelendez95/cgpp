@@ -43,6 +43,8 @@ export default function simple1DExample() {
     mesh.insertEdge(2, 3);
     mesh.insertEdge(3, 0);
 
+    mesh.verifyManifold();
+
     console.log("TRACE mesh");
     mesh.printDebug();
 

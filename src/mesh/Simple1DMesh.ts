@@ -31,9 +31,62 @@ export default class Simple1DMesh {
         this.neighbors[v2].push(edge);
     }
 
+    getEdgesAtVertex(v: number): number[] {
+        return this.neighbors[v];
+    }
+
+    getOtherEnd(vertex: number, edge: number): number {
+        const [start, end] = this.edges[edge];
+        if (vertex === start) {
+            return end;
+        } else if (vertex === end) {
+            return start;
+        } else {
+            throw new Error(`Vertex not on edge: vertex=${vertex} edge=${edge}`);
+        }
+    }
+
+    getEdgeEndpoints(edge: number): [Vector2, Vector2] {
+        const [start, end] = this.edges[edge];
+        return [this.vertices[start], this.vertices[end]];
+    }
+
+    deleteEdge(edge: number) {
+
+    }
+
+    verifyManifold() {
+        if (!this.isManifold()) {
+            throw new Error('Not a manifold');
+        }
+    }
+
+    isManifold() {
+        for (const ns of this.neighbors) {
+            if (ns.length != 2) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     printDebug() {
         console.table(this.vertices.map((v) => ({vertex: `(${v.x}, ${v.y})`})));
         console.table(this.edges.map(([v1, v2]) => ({edge: `(${v1}, ${v2})`})));
         console.table(this.neighbors.map(([e1, e2]) => ({edge: `(${e1}, ${e2})`})));
+    }
+
+    static deleteIdx<T>(arr: T[], idx: number): T[] {
+        if (arr.length < 2 || idx < 0 || idx > arr.length - 1) {
+            // at end or OOB, noop
+            return arr;
+        } else if (idx === arr.length - 1) {
+            arr.pop();
+            return arr;
+        }
+
+        arr[idx] = arr.pop()!;
+        return arr;
     }
 }
