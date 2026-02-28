@@ -1,12 +1,12 @@
-import {Vector2, Vector3} from 'three';
+import {Vector2} from 'three';
 
 export default class Simple1DMesh {
-    vertices: Map<number, Vector2> = new Map();
-    edges: Map<number, [number, number]> = new Map();
+    vertices: Vector2[];
+    edges: [number, number][];
 
     constructor(
-        vertices: Map<number, Vector2> = new Map(),
-        edges: Map<number, [number, number]> = new Map()
+        vertices: Vector2[] = [],
+        edges: [number, number][] = []
     ) {
         this.vertices = vertices;
         this.edges = edges;
@@ -14,10 +14,10 @@ export default class Simple1DMesh {
 
     toPoints(): Vector2[] {
         const points: Vector2[] = []
-        for (const [, [start, end]] of this.edges) {
+        for (const [start, end] of this.edges) {
             points.push(
-                this.vertices.get(start)!,
-                this.vertices.get(end)!
+                this.vertices[start]!,
+                this.vertices[end]!
             )
         }
         return points;

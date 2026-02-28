@@ -3,22 +3,22 @@ import {Vector2, Vector3} from 'three';
 import Simple1DMesh from '../Simple1DMesh';
 
 export default function simple1DExample() {
-    const vertices = new Map([
-        [1, new Vector2(0, 0)],
-        [2, new Vector2(0.5, 0)],
-        [3, new Vector2(1.5, 1)],
-        [4, new Vector2(0, 2.0)],
-        [5, new Vector2(3, 0)],
-        [6, new Vector2(4, 0)],
-    ]);
+    const vertices = [
+        new Vector2(0, 0),
+        new Vector2(0.5, 0),
+        new Vector2(1.5, 1),
+        new Vector2(0, 2.0),
+        new Vector2(3, 0),
+        new Vector2(4, 0),
+    ];
 
-    const edges = new Map<number, [number, number]>([
-        [1, [1, 2]],
-        [2, [2, 3]],
-        [3, [3, 4]],
-        [4, [4, 1]],
-        [5, [5, 6]]
-    ]);
+    const edges: [number, number][] = [
+        [1, 2],
+        [2, 3],
+        [3, 4],
+        [4, 1],
+        [5, 6]
+    ];
 
     // const vertices = new Map([
     //     [1, new Vector2(-10, 0)],
