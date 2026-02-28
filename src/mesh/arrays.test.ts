@@ -1,4 +1,4 @@
-import Simple1DMesh from "./Simple1DMesh"
+import { deleteIdx } from "./arrays";
 
 describe('Simple1DMesh', () => {
     test('deleteIdx 0', () => {
@@ -15,7 +15,7 @@ describe('Simple1DMesh', () => {
 
     function testDelete(arr: any[], idx: number, expectedArr: any[]) {
         const testArray = [...arr];
-        const deletedValue = Simple1DMesh.deleteIdx(testArray, idx);
+        const deletedValue = deleteIdx(testArray, idx);
         expect(testArray).toEqual(expectedArr);
         expect(deletedValue).toEqual(arr[idx]);
     }

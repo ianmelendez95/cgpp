@@ -1,4 +1,5 @@
 import {Vector2} from 'three';
+import { deleteElem, deleteIdx } from './arrays';
 
 export default class Simple1DMesh {
     vertices: Vector2[] = [];
@@ -52,7 +53,9 @@ export default class Simple1DMesh {
     }
 
     deleteEdge(edge: number) {
-
+        const [v1, v2] = deleteIdx(this.edges, edge);
+        deleteElem(this.neighbors[v1], edge);
+        deleteElem(this.neighbors[v2], edge);
     }
 
     verifyManifold() {
@@ -75,17 +78,5 @@ export default class Simple1DMesh {
         console.table(this.vertices.map((v) => ({vertex: `(${v.x}, ${v.y})`})));
         console.table(this.edges.map(([v1, v2]) => ({edge: `(${v1}, ${v2})`})));
         console.table(this.neighbors.map(([e1, e2]) => ({edge: `(${e1}, ${e2})`})));
-    }
-
-    static deleteIdx<T>(arr: T[], idx: number): T {
-        if (idx < 0 || idx > arr.length - 1) {
-            throw new Error('OOB');
-        } else if (idx === arr.length - 1) {
-            return arr.pop()!;
-        }
-
-        const value = arr[idx];
-        arr[idx] = arr.pop()!;
-        return value;
     }
 }
