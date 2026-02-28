@@ -1,7 +1,7 @@
 import {Vector2} from 'three';
 import { deleteElem, deleteIdx } from './arrays';
 
-export default class Simple1DMesh {
+export default class VertexEdge1DMesh {
     vertices: Vector2[] = [];
     edges: [number, number][] = [];
     neighbors: number[][] = [];

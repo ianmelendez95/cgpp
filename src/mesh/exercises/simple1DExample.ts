@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import {Vector2, Vector3} from 'three';
-import CGPP1DMesh from '../Simple1DMesh';
+import VertexEdge1DMesh from '../VertexEdge1DMesh';
 
 export default function simple1DExample() {
-    const mesh = getGCPPExample1();
+    const mesh = getSquare(new Vector2(0, 0), 10);
 
     console.log("TRACE mesh");
     mesh.printDebug();
@@ -12,8 +12,28 @@ export default function simple1DExample() {
     renderPoints(points);
 }
 
-function getGCPPExample1(): CGPP1DMesh {
-    const mesh = new CGPP1DMesh();
+function getSquare(pos: Vector2, sideL: number) {
+    const minX = pos.x;
+    const maxX = pos.x + sideL;
+    const minY = pos.y;
+    const maxY = pos.y + sideL;
+
+    const mesh = new VertexEdge1DMesh();
+    mesh.insertVertex(minX, minY);
+    mesh.insertVertex(minX, maxY);
+    mesh.insertVertex(maxX, maxY);
+    mesh.insertVertex(maxX, minY);
+
+    mesh.insertEdge(0, 1);
+    mesh.insertEdge(1, 2);
+    mesh.insertEdge(2, 3);
+    mesh.insertEdge(3, 0);
+
+    return mesh;
+}
+
+function getGCPPExample1(): VertexEdge1DMesh {
+    const mesh = new VertexEdge1DMesh();
     mesh.insertVertex(0, 0);
     mesh.insertVertex(0.5, 0);
     mesh.insertVertex(1.5, 1);
