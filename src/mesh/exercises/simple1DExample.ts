@@ -1,24 +1,24 @@
 import * as THREE from 'three';
 import {Vector2, Vector3} from 'three';
-import Simple1DMesh from '../Simple1DMesh';
+import CGPP1DMesh from '../Simple1DMesh';
 
 export default function simple1DExample() {
-    const vertices = [
-        new Vector2(0, 0),
-        new Vector2(0.5, 0),
-        new Vector2(1.5, 1),
-        new Vector2(0, 2.0),
-        new Vector2(3, 0),
-        new Vector2(4, 0),
-    ];
+    // const vertices = [
+    //     new Vector2(0, 0),
+    //     new Vector2(0.5, 0),
+    //     new Vector2(1.5, 1),
+    //     new Vector2(0, 2.0),
+    //     new Vector2(3, 0),
+    //     new Vector2(4, 0),
+    // ];
 
-    const edges: [number, number][] = [
-        [1, 2],
-        [2, 3],
-        [3, 4],
-        [4, 1],
-        [5, 6]
-    ];
+    // const edges: [number, number][] = [
+    //     [1, 2],
+    //     [2, 3],
+    //     [3, 4],
+    //     [4, 1],
+    //     [5, 6]
+    // ];
 
     // const vertices = new Map([
     //     [1, new Vector2(-10, 0)],
@@ -32,10 +32,18 @@ export default function simple1DExample() {
     //     [3, [3, 1]]
     // ])
 
-    const mesh = new Simple1DMesh(
-        vertices,
-        edges
-    );
+    const mesh = new CGPP1DMesh();
+    mesh.insertVertex(0, 0);
+    mesh.insertVertex(0.5, 0);
+    mesh.insertVertex(1.5, 1);
+    mesh.insertVertex(0, 2.0);
+
+    mesh.insertEdge(0, 1);
+    mesh.insertEdge(1, 2);
+    mesh.insertEdge(2, 3);
+    mesh.insertEdge(3, 0);
+
+
 
     // const points = [
     //     new THREE.Vector2(-10, 0),
