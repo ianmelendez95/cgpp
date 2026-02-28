@@ -43,7 +43,8 @@ export default function simple1DExample() {
     mesh.insertEdge(2, 3);
     mesh.insertEdge(3, 0);
 
-
+    console.log("TRACE mesh");
+    mesh.printDebug();
 
     // const points = [
     //     new THREE.Vector2(-10, 0),
@@ -54,7 +55,7 @@ export default function simple1DExample() {
 
     const points = mesh.toPoints();
 
-    console.log(JSON.stringify(points));
+    // console.log(JSON.stringify(points));
 
     renderPoints(points);
 }
