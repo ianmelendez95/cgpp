@@ -3,6 +3,8 @@ import {Vector2, Vector3} from 'three';
 import VertexEdge1DMesh from '../VertexEdge1DMesh';
 
 export default function simple1DExample() {
+    const btn1 = document.getElementById('toolbar-button-1')! as HTMLButtonElement;
+    btn1.innerText = 'Subdivide';
     const mesh = getSquare(new Vector2(0, 0), 10);
 
     console.log("TRACE mesh");
@@ -10,6 +12,11 @@ export default function simple1DExample() {
 
     const points = mesh.toPoints();
     renderPoints(points);
+
+    btn1.addEventListener('click', () => {
+        mesh.subdivideManifold(0.5);
+        renderPoints(mesh.toPoints());
+    });
 }
 
 function getSquare(pos: Vector2, sideL: number) {
