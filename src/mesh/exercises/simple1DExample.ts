@@ -57,11 +57,12 @@ function getGCPPExample1(): VertexEdge1DMesh {
 }
 
 function renderPoints(points: Vector3[] | Vector2[]) {
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    document.body.appendChild( renderer.domElement );
+    const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
 
-    const camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 500 );
+    const renderer = new THREE.WebGLRenderer({antialias: false, canvas});
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+
+    const camera = new THREE.PerspectiveCamera( 45, canvas.clientWidth / canvas.clientHeight, 1, 500 );
     camera.position.set(0, 0, 100);
     camera.lookAt(0, 0, 0);
 

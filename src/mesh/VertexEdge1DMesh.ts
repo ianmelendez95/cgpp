@@ -19,6 +19,10 @@ export default class VertexEdge1DMesh {
         return points;
     }
 
+    getVertexPoint(v: number): Vector2 {
+        return this.vertices[v];
+    }
+
     insertVertex(x: number, y: number) {
         this.vertices.push(new Vector2(x, y));
         this.neighbors.push([]);
@@ -30,6 +34,10 @@ export default class VertexEdge1DMesh {
         // update neighbors
         this.neighbors[v1].push(edge);
         this.neighbors[v2].push(edge);
+    }
+
+    getNeighborVertices(v: number): number[] {
+        return this.getEdgesAtVertex(v).map(e => this.getOtherEnd(v, e));
     }
 
     getEdgesAtVertex(v: number): number[] {
@@ -72,6 +80,20 @@ export default class VertexEdge1DMesh {
         }
 
         return true;
+    }
+
+    subdivideManifold(alpha: number) {
+        this.verifyManifold();
+
+        // v = (alpha/2)*u + (alpha/2)*w + (1 - alpha)*v
+        for (let i = 0; i < this.vertices.length; i++) {
+            const v: Vector2 = this.vertices[i];
+            const [u, w] = this.getNeighborVertices(i).map(j => this.getVertexPoint(j)) as Vector2[];
+
+            v.multiplyScalar(1 - alpha)
+                .add(u.clone().multiplyScalar(alpha/2))
+                .add(w.clone().multiplyScalar(alpha/2));
+        }
     }
 
     printDebug() {
