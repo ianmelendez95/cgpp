@@ -67,9 +67,9 @@ function renderPoints(points: Vector3[] | Vector2[]) {
     camera.lookAt(0, 0, 0);
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
+    scene.background = new THREE.Color(0x2e2e2e);
 
-    const material = new THREE.LineBasicMaterial({color: 0x0000ff});
+    const material = new THREE.LineBasicMaterial({color: 0xffffff});
 
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const line = new THREE.LineSegments(geometry, material);
