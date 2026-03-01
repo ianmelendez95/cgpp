@@ -3,6 +3,8 @@ import {Vector2, Vector3} from 'three';
 import VertexEdge1DMesh from '../VertexEdge1DMesh';
 
 export default function simple1DExample() {
+    const threeContext = initContext();
+
     const btn1 = document.getElementById('toolbar-button-1')! as HTMLButtonElement;
     btn1.innerText = 'Subdivide';
     const mesh = getSquare(new Vector2(0, 0), 10);
@@ -11,11 +13,11 @@ export default function simple1DExample() {
     mesh.printDebug();
 
     const points = mesh.toPoints();
-    renderPoints(points);
+    renderPoints(threeContext, points);
 
     btn1.addEventListener('click', () => {
         mesh.subdivideManifold(0.5);
-        renderPoints(mesh.toPoints());
+        renderPoints(threeContext, mesh.toPoints());
     });
 }
 
@@ -63,7 +65,23 @@ function getGCPPExample1(): VertexEdge1DMesh {
     // ];
 }
 
-function renderPoints(points: Vector3[] | Vector2[]) {
+function renderPoints({renderer, camera, scene}: ThreeContext, points: Vector3[] | Vector2[]) {
+    const material = new THREE.LineBasicMaterial({color: 0xffffff});
+
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    const line = new THREE.LineSegments(geometry, material);
+    scene.add(line);
+
+    renderer.render(scene, camera);
+}
+
+type ThreeContext = {
+    renderer: THREE.WebGLRenderer,
+    camera: THREE.Camera,
+    scene: THREE.Scene
+}
+
+function initContext(): ThreeContext {
     const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
 
     const renderer = new THREE.WebGLRenderer({antialias: false, canvas});
@@ -76,11 +94,9 @@ function renderPoints(points: Vector3[] | Vector2[]) {
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x2e2e2e);
 
-    const material = new THREE.LineBasicMaterial({color: 0xffffff});
-
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    const line = new THREE.LineSegments(geometry, material);
-    scene.add(line);
-
-    renderer.render(scene, camera);
+    return {
+        renderer,
+        camera,
+        scene
+    };
 }
