@@ -7,7 +7,7 @@ export default function simple1DExample() {
 
     const btn1 = document.getElementById('toolbar-button-1')! as HTMLButtonElement;
     btn1.innerText = 'Subdivide';
-    const mesh = getSquare(new Vector2(0, 0), 10);
+    const mesh = getSquare(new Vector2(-20, -20), 40);
 
     console.log("TRACE mesh");
     mesh.printDebug();
