@@ -3,7 +3,7 @@ import {Vector2, Vector3} from 'three';
 import VertexEdge1DMesh from '../VertexEdge1DMesh';
 
 export default function simple1DExample() {
-    const threeContext = initContext();
+    const threeContext = new ThreeContext();
 
     const btn1 = document.getElementById('toolbar-button-1')! as HTMLButtonElement;
     btn1.innerText = 'Subdivide';
@@ -13,11 +13,11 @@ export default function simple1DExample() {
     mesh.printDebug();
 
     const points = mesh.toPoints();
-    renderPoints(threeContext, points);
+    threeContext.renderObjects(geoFromPoints(points));
 
     btn1.addEventListener('click', () => {
         mesh.subdivideManifold(0.5);
-        renderPoints(threeContext, mesh.toPoints());
+        threeContext.renderObjects(geoFromPoints(points));
     });
 }
 
@@ -65,20 +65,46 @@ function getGCPPExample1(): VertexEdge1DMesh {
     // ];
 }
 
-function renderPoints({renderer, camera, scene}: ThreeContext, points: Vector3[] | Vector2[]) {
+function geoFromPoints(points: Vector3[] | Vector2[]): THREE.Object3D {
     const material = new THREE.LineBasicMaterial({color: 0xffffff});
 
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const line = new THREE.LineSegments(geometry, material);
-    scene.add(line);
 
-    renderer.render(scene, camera);
+    return line;
 }
 
-type ThreeContext = {
-    renderer: THREE.WebGLRenderer,
-    camera: THREE.Camera,
-    scene: THREE.Scene
+class ThreeContext {
+    renderer: THREE.WebGLRenderer;
+    camera: THREE.Camera;
+    scene: THREE.Scene;
+
+    constructor() {
+        const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
+
+        const renderer = new THREE.WebGLRenderer({antialias: false, canvas});
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+
+        const camera = new THREE.PerspectiveCamera( 45, canvas.clientWidth / canvas.clientHeight, 1, 500 );
+        camera.position.set(0, 0, 100);
+        camera.lookAt(0, 0, 0);
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x2e2e2e);
+
+        this.renderer = renderer;
+        this.camera = camera;
+        this.scene = scene;
+    }
+
+    renderObjects(...objects: THREE.Object3D[]) {
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x2e2e2e);
+
+        scene.add(...objects);
+
+        this.renderer.render(scene, this.camera);
+    }
 }
 
 function initContext(): ThreeContext {
