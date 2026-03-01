@@ -13,11 +13,13 @@ export default function simple1DExample() {
     mesh.printDebug();
 
     const points = mesh.toPoints();
-    threeContext.renderObjects(geoFromPoints(points));
+    threeContext.addObjects(geoFromPoints(points));
+    threeContext.render();
 
     btn1.addEventListener('click', () => {
         mesh.subdivideManifold(0.5);
-        threeContext.renderObjects(geoFromPoints(points));
+        threeContext.addObjects(geoFromPoints(points));
+        threeContext.render();
     });
 }
 
@@ -97,13 +99,19 @@ class ThreeContext {
         this.scene = scene;
     }
 
-    renderObjects(...objects: THREE.Object3D[]) {
+    clearScene() {
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x2e2e2e);
 
-        scene.add(...objects);
+        this.scene = scene;
+    }
 
-        this.renderer.render(scene, this.camera);
+    addObjects(...objects: THREE.Object3D[]) {
+        this.scene.add(...objects);
+    }
+
+    render() {
+        this.renderer.render(this.scene, this.camera);
     }
 }
 
