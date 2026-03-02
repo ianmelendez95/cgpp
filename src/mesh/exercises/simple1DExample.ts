@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {Vector2, Vector3} from 'three';
 import VertexEdge1DMesh from '../VertexEdge1DMesh';
+import { newGridObjs, newPointsObj, newSegmentsObj } from '../../three/objects';
 
 export default function simple1DExample() {
     const threeContext = new ThreeContext();
@@ -12,13 +13,15 @@ export default function simple1DExample() {
     console.log("TRACE mesh");
     mesh.printDebug();
 
-    const points = mesh.toPoints();
-    threeContext.addObjects(geoFromPoints(points));
+    threeContext.addObjects(...newGridObjs(-20, 20, 5));
+    threeContext.render();
+
+    threeContext.addObjects(newPointsObj(mesh.toPoints()));
     threeContext.render();
 
     btn1.addEventListener('click', () => {
         mesh.subdivideManifold(0.5);
-        threeContext.addObjects(geoFromPoints(points));
+        threeContext.addObjects(newSegmentsObj(mesh.toPoints()));
         threeContext.render();
     });
 }
@@ -67,15 +70,6 @@ function getGCPPExample1(): VertexEdge1DMesh {
     // ];
 }
 
-function geoFromPoints(points: Vector3[] | Vector2[]): THREE.Object3D {
-    const material = new THREE.LineBasicMaterial({color: 0xffffff});
-
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    const line = new THREE.LineSegments(geometry, material);
-
-    return line;
-}
-
 class ThreeContext {
     renderer: THREE.WebGLRenderer;
     camera: THREE.Camera;
@@ -115,22 +109,22 @@ class ThreeContext {
     }
 }
 
-function initContext(): ThreeContext {
-    const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
+// function initContext(): ThreeContext {
+//     const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
 
-    const renderer = new THREE.WebGLRenderer({antialias: false, canvas});
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+//     const renderer = new THREE.WebGLRenderer({antialias: false, canvas});
+//     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
-    const camera = new THREE.PerspectiveCamera( 45, canvas.clientWidth / canvas.clientHeight, 1, 500 );
-    camera.position.set(0, 0, 100);
-    camera.lookAt(0, 0, 0);
+//     const camera = new THREE.PerspectiveCamera( 45, canvas.clientWidth / canvas.clientHeight, 1, 500 );
+//     camera.position.set(0, 0, 100);
+//     camera.lookAt(0, 0, 0);
 
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x2e2e2e);
+//     const scene = new THREE.Scene();
+//     scene.background = new THREE.Color(0x2e2e2e);
 
-    return {
-        renderer,
-        camera,
-        scene
-    };
-}
+//     return {
+//         renderer,
+//         camera,
+//         scene
+//     };
+// }
