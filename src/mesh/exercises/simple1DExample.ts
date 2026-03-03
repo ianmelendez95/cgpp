@@ -8,7 +8,7 @@ export default function simple1DExample() {
 
     const btn1 = document.getElementById('toolbar-button-1')! as HTMLButtonElement;
     btn1.innerText = 'Subdivide';
-    const mesh = getSquareMesh(new Vector2(-5, -5), 10);
+    let mesh = getSquareMesh(new Vector2(-5, -5), 10);
 
     console.log("TRACE mesh");
     mesh.printDebug();
@@ -20,7 +20,7 @@ export default function simple1DExample() {
     threeContext.render();
 
     btn1.addEventListener('click', () => {
-        mesh.subdivideManifold(0.5);
+        mesh = mesh.subdividedManifold(0.2);
         threeContext.addObjects(newSegmentsObj(mesh.toPoints()));
         threeContext.render();
     });

@@ -8,6 +8,14 @@ export default class VertexEdge1DMesh {
 
     constructor() {}
 
+    clone(): VertexEdge1DMesh {
+        const newMesh = new VertexEdge1DMesh();
+        newMesh.vertices = this.vertices.map(v => v.clone());
+        newMesh.edges = this.edges.map(([v1, v2]) => [v1, v2]);
+        newMesh.neighbors = this.edges.map(ns => [...ns]);
+        return newMesh;
+    }
+
     toPoints(): Vector2[] {
         const points: Vector2[] = []
         for (const [start, end] of this.edges) {
@@ -82,18 +90,23 @@ export default class VertexEdge1DMesh {
         return true;
     }
 
-    subdivideManifold(alpha: number) {
+    subdividedManifold(alpha: number): VertexEdge1DMesh {
         this.verifyManifold();
 
-        // v = (alpha/2)*u + (alpha/2)*w + (1 - alpha)*v
+        const newMesh = this.clone();
+
+        // v_v = (alpha/2)*u + (alpha/2)*w + (1 - alpha)*v
+        // v_e = (t + u)/2
         for (let i = 0; i < this.vertices.length; i++) {
             const v: Vector2 = this.vertices[i];
             const [u, w] = this.getNeighborVertices(i).map(j => this.getVertexPoint(j)) as Vector2[];
 
-            v.multiplyScalar(1 - alpha)
+            newMesh.vertices[i] = v.clone().multiplyScalar(1 - alpha)
                 .add(u.clone().multiplyScalar(alpha/2))
                 .add(w.clone().multiplyScalar(alpha/2));
         }
+
+        return newMesh;
     }
 
     printDebug() {
