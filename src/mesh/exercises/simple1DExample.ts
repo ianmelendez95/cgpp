@@ -8,7 +8,7 @@ export default function simple1DExample() {
 
     const btn1 = document.getElementById('toolbar-button-1')! as HTMLButtonElement;
     btn1.innerText = 'Subdivide';
-    const mesh = getSquare(new Vector2(-20, -20), 40);
+    const mesh = getSquareMesh(new Vector2(-5, -5), 10);
 
     console.log("TRACE mesh");
     mesh.printDebug();
@@ -16,7 +16,7 @@ export default function simple1DExample() {
     threeContext.addObjects(...newGridObjs(-50, 50, 1));
     threeContext.render();
 
-    threeContext.addObjects(newPointsObj(mesh.toPoints()));
+    threeContext.addObjects(newSegmentsObj(mesh.toPoints()));
     threeContext.render();
 
     btn1.addEventListener('click', () => {
@@ -26,7 +26,7 @@ export default function simple1DExample() {
     });
 }
 
-function getSquare(pos: Vector2, sideL: number) {
+function getSquareMesh(pos: Vector2, sideL: number): VertexEdge1DMesh {
     const minX = pos.x;
     const maxX = pos.x + sideL;
     const minY = pos.y;
