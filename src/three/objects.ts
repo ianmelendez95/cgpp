@@ -15,23 +15,40 @@ export function newGridObjs(
         }
 
         const geometry = new THREE.BufferGeometry().setFromPoints(gridPoints);
-        const material = new THREE.PointsMaterial({color: 0x505050, opacity: 0.1})
+        const material = new THREE.PointsMaterial({color: 0x505050, size: 2, sizeAttenuation: false})
 
         dotsObj = new THREE.Points(geometry, material);
     }
 
-    let crossObj; {
-        const crossRad = spacing * 0.5;
+    let ticks; {
+        const tickWidths = spacing * 0.2;
+        let tickSegments = [];
+        for (let xyPos = 0; xyPos < maxXY; xyPos += 5) {
+            tickSegments.push(
+                // +y
+                new Vector2(-tickWidths, xyPos),
+                new Vector2(tickWidths, xyPos),
 
-        const geometry = new THREE.BufferGeometry().setFromPoints([
-            new Vector2(-crossRad, 0), new Vector2(crossRad, 0),
-            new Vector2(0, -crossRad), new Vector2(0, crossRad)
-        ]);
-        const material = new THREE.LineBasicMaterial({color: 0x707070});
-        crossObj = new THREE.LineSegments(geometry, material);
+                // -y
+                new Vector2(-tickWidths, -xyPos),
+                new Vector2(tickWidths, -xyPos),
+
+                // x
+                new Vector2(xyPos, -tickWidths),
+                new Vector2(xyPos, tickWidths),
+
+                // x
+                new Vector2(-xyPos, -tickWidths),
+                new Vector2(-xyPos, tickWidths)
+            );
+        }
+
+        const ticksGeometry = new THREE.BufferGeometry().setFromPoints(tickSegments);
+        const ticksMaterial = new THREE.LineBasicMaterial({color: 0x707070});
+        ticks = new THREE.LineSegments(ticksGeometry, ticksMaterial);
     }
 
-    return [dotsObj, crossObj];
+    return [dotsObj, ticks];
 }
 
 export function newSegmentsObj(points: Vector3[] | Vector2[]): THREE.Object3D {
@@ -46,17 +63,14 @@ export function newSegmentsObj(points: Vector3[] | Vector2[]): THREE.Object3D {
 export function newPointsObj(
     points: Vector3[] | Vector2[], 
     {
-        color,
-        opacity
+        color
     }: {
         color?: number,
-        opacity?: number
     } = {
         color: 0xf0f0f0,
-        opacity: 1.0
     }
 ): THREE.Object3D {
-    const material = new THREE.PointsMaterial({color});
+    const material = new THREE.PointsMaterial({color, size: 10, sizeAttenuation: false});
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const pointsObj = new THREE.Points(geometry, material);
 

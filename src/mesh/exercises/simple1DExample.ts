@@ -13,7 +13,7 @@ export default function simple1DExample() {
     console.log("TRACE mesh");
     mesh.printDebug();
 
-    threeContext.addObjects(...newGridObjs(-20, 20, 5));
+    threeContext.addObjects(...newGridObjs(-50, 50, 1));
     threeContext.render();
 
     threeContext.addObjects(newPointsObj(mesh.toPoints()));
@@ -82,7 +82,7 @@ class ThreeContext {
         renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
         const camera = new THREE.PerspectiveCamera( 45, canvas.clientWidth / canvas.clientHeight, 1, 500 );
-        camera.position.set(0, 0, 100);
+        camera.position.set(0, 0, 25);
         camera.lookAt(0, 0, 0);
 
         const scene = new THREE.Scene();
