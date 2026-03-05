@@ -31,9 +31,15 @@ export default class VertexEdge1DMesh {
         return this.vertices[v];
     }
 
-    insertVertex(x: number, y: number) {
-        this.vertices.push(new Vector2(x, y));
+    insertVertex(x: number | Vector2, y?: number): number {
+        if (typeof x === 'number') {
+            this.vertices.push(new Vector2(x, y));
+        } else {
+            this.vertices.push(x);
+        }
+
         this.neighbors.push([]);
+        return this.vertices.length - 1;
     }
 
     insertEdge(v1: number, v2: number) {
@@ -96,14 +102,28 @@ export default class VertexEdge1DMesh {
         const newMesh = this.clone();
 
         // v_v = (alpha/2)*u + (alpha/2)*w + (1 - alpha)*v
-        // v_e = (t + u)/2
-        for (let i = 0; i < this.vertices.length; i++) {
-            const v: Vector2 = this.vertices[i];
-            const [u, w] = this.getNeighborVertices(i).map(j => this.getVertexPoint(j)) as Vector2[];
+        for (let vertexIdx = 0; vertexIdx < this.vertices.length; vertexIdx++) {
+            const v: Vector2 = this.vertices[vertexIdx];
+            const [u, w] = this.getNeighborVertices(vertexIdx).map(j => this.getVertexPoint(j)) as Vector2[];
 
-            newMesh.vertices[i] = v.clone().multiplyScalar(1 - alpha)
+            newMesh.vertices[vertexIdx] = v.clone().multiplyScalar(1 - alpha)
                 .add(u.clone().multiplyScalar(alpha/2))
                 .add(w.clone().multiplyScalar(alpha/2));
+        }
+
+        // v_e = (t + u)/2
+        for (let edgeIdx = 0; edgeIdx < this.edges.length; edgeIdx++) {
+            const [v1_i, v2_i] = this.edges[edgeIdx];
+            const v1 = this.vertices[v1_i].clone();
+            const v2 = this.vertices[v2_i].clone();
+
+            const vNew = v1.add(v2).divideScalar(2);
+
+            newMesh.deleteEdge(edgeIdx);
+
+            const vNew_i = newMesh.insertVertex(vNew);
+            newMesh.insertEdge(v1_i, vNew_i);
+            newMesh.insertEdge(vNew_i, v2_i);
         }
 
         return newMesh;
