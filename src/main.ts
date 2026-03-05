@@ -1,3 +1,3 @@
-import simple1DExample from './mesh/exercises/simple1DExample';
+import gameOfLife from './webgpu/gameOfLife';
 
-simple1DExample();
+gameOfLife();
