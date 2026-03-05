@@ -26,7 +26,8 @@ export default async function gameOfLife() {
         colorAttachments: [{
             view: context.getCurrentTexture().createView(),
             loadOp: "clear",
-            storeOp: "store"
+            storeOp: "store",
+            clearValue: {r: 0, g: 0, b: 0.4, a: 1}
         }]
     });
     pass.end();
