@@ -14,7 +14,7 @@ export default async function myGameOfLife() {
     });
 
     const commandEncoder = device.createCommandEncoder();
-    
+
     const vertices = new Float32Array([
         -0.8, -0.8,
          0.8, -0.8,
@@ -58,7 +58,10 @@ export default async function myGameOfLife() {
 
             @vertex 
             fn vertexMain(@location(0) pos: vec2f) -> @builtin(position) vec4f {
-                return vec4f(pos / grid, 0, 1);
+                let cell = vec2f(1, 1);
+                let cellOffset = cell / grid * 2;
+                let gridPos = ((pos + 1) / grid) - 1 + cellOffset;
+                return vec4f(gridPos, 0, 1);
             }
 
             @fragment
