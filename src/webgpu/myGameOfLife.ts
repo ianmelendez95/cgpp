@@ -1,4 +1,4 @@
-
+const GRID_SIZE: number = 4;
 
 export default async function myGameOfLife() {
     const canvas = document.getElementById('cgpp-canvas')! as HTMLCanvasElement;
@@ -41,12 +41,24 @@ export default async function myGameOfLife() {
         }]
     };
 
+    const grid = new Float32Array([GRID_SIZE, GRID_SIZE]);
+
+    const uniformBuffer = device.createBuffer({
+        label: "Cell grid uniform buffer",
+        size: grid.byteLength,
+        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+    });
+
+    device.queue.writeBuffer(uniformBuffer, 0, grid);
+
     const shaderModule = device.createShaderModule({
         label: 'shader',
         code: /* wgsl */ `
+            @group(0) @binding(0) var <uniform> grid: vec2f;
+
             @vertex 
             fn vertexMain(@location(0) pos: vec2f) -> @builtin(position) vec4f {
-                return vec4f(pos, 0, 1);
+                return vec4f(pos / grid, 0, 1);
             }
 
             @fragment
@@ -70,7 +82,15 @@ export default async function myGameOfLife() {
                 format: navigator.gpu.getPreferredCanvasFormat()
             }]
         }
-    })
+    });
+
+    const bindGroup = device.createBindGroup({
+        layout: pipeline.getBindGroupLayout(0),
+        entries: [{
+            binding: 0,
+            resource: uniformBuffer
+        }]
+    });
 
     const pass = commandEncoder.beginRenderPass({
         colorAttachments: [{
@@ -83,6 +103,7 @@ export default async function myGameOfLife() {
 
     pass.setVertexBuffer(0, vertexBuffer);
     pass.setPipeline(pipeline);
+    pass.setBindGroup(0, bindGroup);
     pass.draw(6);
 
     pass.end();
