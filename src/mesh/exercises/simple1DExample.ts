@@ -32,9 +32,6 @@ export default function simple1DExample() {
         mesh = subdivMesh;
         subdivMesh = mesh.subdividedManifold(readAlpha());
 
-        // mainObj.geometry.setFromPoints(mesh.toPoints());
-        // subdivObj.geometry.setFromPoints(subdivMesh.toPoints());
-
         mainObj = newSegmentsObj(mesh.toPoints());
         subdivObj = newSegmentsObj(subdivMesh.toPoints(), {dashed: true});
 
@@ -67,7 +64,7 @@ function getSubdivideEl(): HTMLInputElement {
 function initAlphaEl() {
     const input2 = getAlphaEl();
     input2.value = '0.5';
-    input2.type = "number";
+    input2.type = 'number';
     input2.max = '1';
     input2.min = '0';
     input2.step = '0.05';
