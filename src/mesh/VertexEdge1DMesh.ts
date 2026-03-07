@@ -113,20 +113,22 @@ export default class VertexEdge1DMesh {
             newMesh.vertices[vertexIdx] = new_v;
         }
 
+        // now we have to completely recreate edges and neighbors
+        newMesh.neighbors = [...new Array(this.vertices.length)].map(() => []);
+        newMesh.edges = [];
+
         // v_e = (t + u)/2
-        // for (let edgeIdx = 0; edgeIdx < this.edges.length; edgeIdx++) {
-        //     const [v1_i, v2_i] = this.edges[edgeIdx];
-        //     const v1 = this.vertices[v1_i].clone();
-        //     const v2 = this.vertices[v2_i].clone();
+        for (let edgeIdx = 0; edgeIdx < this.edges.length; edgeIdx++) {
+            const [v1_i, v2_i] = this.edges[edgeIdx];
+            const v1 = this.vertices[v1_i].clone();
+            const v2 = this.vertices[v2_i].clone();
 
-        //     const vNew = v1.add(v2).divideScalar(2);
+            const vNew = v1.add(v2).divideScalar(2);
 
-        //     newMesh.deleteEdge(edgeIdx);
-
-        //     const vNew_i = newMesh.insertVertex(vNew);
-        //     newMesh.insertEdge(v1_i, vNew_i);
-        //     newMesh.insertEdge(vNew_i, v2_i);
-        // }
+            const vNew_i = newMesh.insertVertex(vNew);
+            newMesh.insertEdge(v1_i, vNew_i);
+            newMesh.insertEdge(vNew_i, v2_i);
+        }
 
         return newMesh;
     }
