@@ -58,10 +58,11 @@ export default async function myGameOfLife() {
 
             @vertex 
             fn vertexMain(@location(0) pos: vec2f) -> @builtin(position) vec4f {
-                let cell = vec2f(1, 1);
-                let cellOffset = cell / grid * 2;
-                let gridPos = ((pos + 1) / grid) - 1 + cellOffset;
-                return vec4f(gridPos, 0, 1);
+                let cellCoord = vec2f(1, 1);
+                let cellAtOrigin = (pos + 1) / grid;
+                let cellAt00 = cellAtOrigin - 1;
+                let cellAtCoord = cellAt00 + ((cellCoord * 2) / grid);
+                return vec4f(cellAt00, 0, 1);
             }
 
             @fragment

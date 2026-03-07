@@ -67,8 +67,9 @@ export default async function gameOfLife() {
             @vertex 
             fn vertexMain(@location(0) pos: vec2f) -> @builtin(position) vec4f {
                 let cell = vec2f(1, 1);
-                let cellOffset = cell / grid * 2;
-                let gridPos = (pos + 1) / grid - 1 + cellOffset;
+                let cellAt00 = (pos + 1) / grid - 1;
+                let cellOffset = cell * (2 / grid);
+                let gridPos = cellAt00 + cellOffset;
                 return vec4f(gridPos, 0, 1); // (x, y, z, w)
             }
 
