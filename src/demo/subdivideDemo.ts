@@ -1,9 +1,9 @@
 import * as THREE from 'three';
 import {Vector2, Vector3} from 'three';
-import VertexEdge1DMesh from '../VertexEdge1DMesh';
-import { newGridObjs, newPointsObj, newSegmentsObj } from '../../three/objects';
+import VertexEdge1DMesh from '../mesh/VertexEdge1DMesh';
+import { newGridObjs, newPointsObj, newSegmentsObj } from '../three/objects';
 
-export default function simple1DExample() {
+export default function initSubdivideDemo() {
     const threeContext = new ThreeContext();
 
     // setup the grid
@@ -162,22 +162,4 @@ class ThreeContext {
     }
 }
 
-// function initContext(): ThreeContext {
-//     const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
-
-//     const renderer = new THREE.WebGLRenderer({antialias: false, canvas});
-//     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-
-//     const camera = new THREE.PerspectiveCamera( 45, canvas.clientWidth / canvas.clientHeight, 1, 500 );
-//     camera.position.set(0, 0, 100);
-//     camera.lookAt(0, 0, 0);
-
-//     const scene = new THREE.Scene();
-//     scene.background = new THREE.Color(0x2e2e2e);
-
-//     return {
-//         renderer,
-//         camera,
-//         scene
-//     };
-// }
+initSubdivideDemo();
