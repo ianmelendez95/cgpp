@@ -28,6 +28,12 @@ export default function initSubdivideDemo() {
     );
     threeContext.render();
 
+    onAlphaChange((newAlpha) => {
+        subdivMesh = mesh.subdividedManifold(newAlpha);
+        subdivObj.geometry.setFromPoints(subdivMesh.toPoints());
+        threeContext.render();
+    });
+
     onSubdivide(() => {
         mesh = subdivMesh;
         subdivMesh = mesh.subdividedManifold(readAlpha());
@@ -58,16 +64,22 @@ function onSubdivide(callback: () => void) {
 }
 
 function getSubdivideEl(): HTMLInputElement {
-    return document.getElementById('toolbar-button-1')! as HTMLInputElement;
+    return document.getElementById('subdivide-button')! as HTMLInputElement;
 }
 
 function initAlphaEl() {
-    const input2 = getAlphaEl();
-    input2.value = '0.5';
-    input2.type = 'number';
-    input2.max = '1';
-    input2.min = '0';
-    input2.step = '0.05';
+    const alpha = getAlphaEl();
+
+    const alphaDisplay = document.getElementById('alpha-display')! as HTMLDivElement;
+    alpha.addEventListener('input', (event) => {
+        alphaDisplay.textContent = (event.target as HTMLInputElement).value;
+    });
+}
+
+function onAlphaChange(callback: (newAlpha: number) => void) {
+    getAlphaEl().addEventListener('input', (event) => {
+        callback(parseFloat((event.target as HTMLInputElement).value))
+    })
 }
 
 function readAlpha(): number {
@@ -75,7 +87,7 @@ function readAlpha(): number {
 }
 
 function getAlphaEl(): HTMLInputElement {
-    return document.getElementById('toolbar-button-2')! as HTMLInputElement;
+    return document.getElementById('alpha-range')! as HTMLInputElement;
 }
 
 function getSquareMesh(pos: Vector2, sideL: number): VertexEdge1DMesh {
