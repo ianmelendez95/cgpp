@@ -6,8 +6,14 @@ import { newGridObjs, newPointsObj, newSegmentsObj } from '../../three/objects';
 export default function simple1DExample() {
     const threeContext = new ThreeContext();
 
-    const btn1 = document.getElementById('toolbar-button-1')! as HTMLButtonElement;
-    btn1.innerText = 'Subdivide';
+    const input1 = document.getElementById('toolbar-button-1')! as HTMLInputElement;
+    input1.type = "button";
+    input1.value = 'Subdivide';
+
+    const input2 = document.getElementById('toolbar-button-2')! as HTMLInputElement;
+    input2.type = "number";
+    input2.value = '0.5';
+
     let mesh = getSquareMesh(new Vector2(-5, -5), 10);
 
     console.log("TRACE mesh");
@@ -19,8 +25,10 @@ export default function simple1DExample() {
     threeContext.addObjects(newSegmentsObj(mesh.toPoints()));
     threeContext.render();
 
-    btn1.addEventListener('click', () => {
-        mesh = mesh.subdividedManifold(0.2);
+    input1.addEventListener('click', () => {
+        const alpha = parseFloat(input2.value);
+
+        mesh = mesh.subdividedManifold(alpha);
         threeContext.addObjects(newSegmentsObj(mesh.toPoints()));
         threeContext.render();
     });
