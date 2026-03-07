@@ -11,8 +11,11 @@ export default function simple1DExample() {
     input1.value = 'Subdivide';
 
     const input2 = document.getElementById('toolbar-button-2')! as HTMLInputElement;
-    input2.type = "number";
     input2.value = '0.5';
+    input2.type = "number";
+    input2.max = '1';
+    input2.min = '0';
+    input2.step = '0.05';
 
     let mesh = getSquareMesh(new Vector2(-5, -5), 10);
 
@@ -23,6 +26,12 @@ export default function simple1DExample() {
     threeContext.render();
 
     threeContext.addObjects(newSegmentsObj(mesh.toPoints()));
+
+    // preview subdivided manifold
+    const alpha = parseFloat(input2.value);
+    let subdivMesh = mesh.subdividedManifold(alpha);
+    threeContext.addObjects(newSegmentsObj(subdivMesh.toPoints(), {dashed: true}));
+
     threeContext.render();
 
     input1.addEventListener('click', () => {

@@ -51,11 +51,14 @@ export function newGridObjs(
     return [dotsObj, ticks];
 }
 
-export function newSegmentsObj(points: Vector3[] | Vector2[]): THREE.Object3D {
-    const material = new THREE.LineBasicMaterial({color: 0xffffff});
+export function newSegmentsObj(points: Vector3[] | Vector2[], {dashed = false}: {dashed?: boolean} = {}): THREE.Object3D {
+    const material = dashed 
+        ? new THREE.LineDashedMaterial({color: 0x505050, scale: 1, gapSize: 0.1, dashSize: 0.5})
+        : new THREE.LineBasicMaterial({color: 0xffffff});
 
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const line = new THREE.LineSegments(geometry, material);
+    line.computeLineDistances();
 
     return line;
 }
