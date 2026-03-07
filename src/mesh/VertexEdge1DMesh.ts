@@ -20,8 +20,8 @@ export default class VertexEdge1DMesh {
         const points: Vector2[] = []
         for (const [start, end] of this.edges) {
             points.push(
-                this.vertices[start],
-                this.vertices[end]
+                this.vertices[start].clone(),
+                this.vertices[end].clone()
             );
         };
         return points;

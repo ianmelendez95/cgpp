@@ -6,41 +6,79 @@ import { newGridObjs, newPointsObj, newSegmentsObj } from '../../three/objects';
 export default function simple1DExample() {
     const threeContext = new ThreeContext();
 
-    const input1 = document.getElementById('toolbar-button-1')! as HTMLInputElement;
+    // setup the grid
+    const gridObjs = newGridObjs(-50, 50, 1);
+
+    // initialize inputs
+    initAlphaEl();
+    initSubdivideEl();
+
+    // create meshes
+    let mesh = getSquareMesh(new Vector2(-5, -5), 10);
+    let subdivMesh = mesh.subdividedManifold(readAlpha());
+
+    // create Three objs
+    let mainObj = newSegmentsObj(mesh.toPoints());
+    let subdivObj = newSegmentsObj(subdivMesh.toPoints(), {dashed: true});
+
+    threeContext.scene.add(
+        ...gridObjs,
+        mainObj, 
+        subdivObj
+    );
+    threeContext.render();
+
+    onSubdivide(() => {
+        mesh = subdivMesh;
+        subdivMesh = mesh.subdividedManifold(readAlpha());
+
+        // mainObj.geometry.setFromPoints(mesh.toPoints());
+        // subdivObj.geometry.setFromPoints(subdivMesh.toPoints());
+
+        mainObj = newSegmentsObj(mesh.toPoints());
+        subdivObj = newSegmentsObj(subdivMesh.toPoints(), {dashed: true});
+
+        threeContext.scene.clear();
+        threeContext.scene.add(
+            ...gridObjs,
+            mainObj, 
+            subdivObj
+        );
+
+        threeContext.render();
+    });
+}
+
+function initSubdivideEl() {
+    const input1 = getSubdivideEl();
     input1.type = "button";
     input1.value = 'Subdivide';
+}
 
-    const input2 = document.getElementById('toolbar-button-2')! as HTMLInputElement;
+function onSubdivide(callback: () => void) {
+    const input1 = getSubdivideEl();
+    input1.addEventListener('click', callback);
+}
+
+function getSubdivideEl(): HTMLInputElement {
+    return document.getElementById('toolbar-button-1')! as HTMLInputElement;
+}
+
+function initAlphaEl() {
+    const input2 = getAlphaEl();
     input2.value = '0.5';
     input2.type = "number";
     input2.max = '1';
     input2.min = '0';
     input2.step = '0.05';
+}
 
-    let mesh = getSquareMesh(new Vector2(-5, -5), 10);
+function readAlpha(): number {
+    return parseFloat(getAlphaEl().value);
+}
 
-    console.log("TRACE mesh");
-    mesh.printDebug();
-
-    threeContext.addObjects(...newGridObjs(-50, 50, 1));
-    threeContext.render();
-
-    threeContext.addObjects(newSegmentsObj(mesh.toPoints()));
-
-    // preview subdivided manifold
-    const alpha = parseFloat(input2.value);
-    let subdivMesh = mesh.subdividedManifold(alpha);
-    threeContext.addObjects(newSegmentsObj(subdivMesh.toPoints(), {dashed: true}));
-
-    threeContext.render();
-
-    input1.addEventListener('click', () => {
-        const alpha = parseFloat(input2.value);
-
-        mesh = mesh.subdividedManifold(alpha);
-        threeContext.addObjects(newSegmentsObj(mesh.toPoints()));
-        threeContext.render();
-    });
+function getAlphaEl(): HTMLInputElement {
+    return document.getElementById('toolbar-button-2')! as HTMLInputElement;
 }
 
 function getSquareMesh(pos: Vector2, sideL: number): VertexEdge1DMesh {
@@ -111,10 +149,11 @@ class ThreeContext {
     }
 
     clearScene() {
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x2e2e2e);
+        this.scene.clear();
+        // const scene = new THREE.Scene();
+        // scene.background = new THREE.Color(0x2e2e2e);
 
-        this.scene = scene;
+        // this.scene = scene;
     }
 
     addObjects(...objects: THREE.Object3D[]) {
