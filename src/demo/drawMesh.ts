@@ -8,18 +8,16 @@ export default function initDrawMesh() {
     const {scene, renderer, camera, viewHeight, viewWidth} = initThree(canvas);
 
     // setup the grid
-    const gridObjs = buildGrid(viewWidth, viewHeight);
+    const grid = buildGrid(viewWidth, viewHeight);
 
     // create meshes
     let mesh = buildSquareMesh(new Vector2(-5, -5), 20);
 
     let {points, segments} = meshToPointSegments(mesh);
 
-    scene.add(
-        ...gridObjs,
-        points,
-        segments
-    );
+    grid.content.add(points, segments);
+
+    scene.add(grid.backboard);
     renderer.render(scene, camera);
 
     window.addEventListener('mousemove', (event: MouseEvent) => {
