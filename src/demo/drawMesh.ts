@@ -20,22 +20,30 @@ export default function initDrawMesh() {
     scene.add(grid.backboard);
     renderer.render(scene, camera);
 
-    window.addEventListener('mousemove', (event: MouseEvent) => {
-        const raycaster = new THREE.Raycaster();
+    const raycaster = new THREE.Raycaster();
 
+    window.addEventListener('mousemove', (event: MouseEvent) => {
+        raycaster.setFromCamera(
+            getNormalizedMousePos(canvas, event.clientX, event.clientY), 
+            camera
+        );
+
+        const [intersection] = raycaster.intersectObject(grid.backboard, false);
+        console.log(`Intersected: (${intersection.point.x}, ${intersection.point.y})`)
+    });
+}
+
+function getNormalizedMousePos(canvas: HTMLCanvasElement, mouseX: number, mouseY: number) {
         const rect = canvas.getBoundingClientRect();
 
-        const xRatio = (event.clientX - rect.left) / rect.width;
-        const yRatio = (event.clientY - rect.top) / rect.height;
+        const xRatio = (mouseX - rect.left) / rect.width;
+        const yRatio = (mouseY - rect.top) / rect.height;
 
         const xNorm = (xRatio * 2) - 1;
         const yNorm = -2 * yRatio + 1;
 
-        console.log(`Pos: (${xNorm}, ${yNorm})`);
-    });
+        return new THREE.Vector2(xNorm, yNorm);
 }
-
-
 
 function meshToPointSegments(mesh: VertexEdge1DMesh): {points: THREE.Points, segments: THREE.LineSegments} {
     const vertices = mesh.getVertices();
