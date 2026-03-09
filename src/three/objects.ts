@@ -2,15 +2,21 @@ import * as THREE from 'three';
 import {Vector2, Vector3} from 'three';
 
 export function buildGrid(
-    minXY: number, 
-    maxXY: number, 
-    spacing: number,
+    width: number,
+    height: number,
 ): THREE.Object3D[] {
+    let backboard = new THREE.Mesh(
+        new THREE.PlaneGeometry(width, height),
+        new THREE.MeshBasicMaterial({color: 0x2e2e2e, side: THREE.DoubleSide})
+    );
+
+    const maxXY = Math.max(width, height) / 2;
+
     let dotsObj; {
         const gridPoints = [];
-        for (let i = minXY; i <= maxXY; i++) {
-            for (let j = minXY; j <= maxXY; j++) {
-                gridPoints.push(new Vector2(i ,j).multiplyScalar(spacing));
+        for (let i = -maxXY; i <= maxXY; i++) {
+            for (let j = -maxXY; j <= maxXY; j++) {
+                gridPoints.push(new Vector2(i ,j));
             }
         }
 
@@ -21,25 +27,25 @@ export function buildGrid(
     }
 
     let ticks; {
-        const tickWidths = spacing * 0.2;
+        const tickHalfWidth = 0.2;
         let tickSegments = [];
         for (let xyPos = 0; xyPos < maxXY; xyPos += 5) {
             tickSegments.push(
                 // +y
-                new Vector2(-tickWidths, xyPos),
-                new Vector2(tickWidths, xyPos),
+                new Vector2(-tickHalfWidth, xyPos),
+                new Vector2(tickHalfWidth, xyPos),
 
                 // -y
-                new Vector2(-tickWidths, -xyPos),
-                new Vector2(tickWidths, -xyPos),
+                new Vector2(-tickHalfWidth, -xyPos),
+                new Vector2(tickHalfWidth, -xyPos),
 
                 // x
-                new Vector2(xyPos, -tickWidths),
-                new Vector2(xyPos, tickWidths),
+                new Vector2(xyPos, -tickHalfWidth),
+                new Vector2(xyPos, tickHalfWidth),
 
                 // x
-                new Vector2(-xyPos, -tickWidths),
-                new Vector2(-xyPos, tickWidths)
+                new Vector2(-xyPos, -tickHalfWidth),
+                new Vector2(-xyPos, tickHalfWidth)
             );
         }
 
@@ -48,7 +54,7 @@ export function buildGrid(
         ticks = new THREE.LineSegments(ticksGeometry, ticksMaterial);
     }
 
-    return [dotsObj, ticks];
+    return [backboard, dotsObj, ticks];
 }
 
 export function buildSegments(points: Vector3[] | Vector2[], {dashed = false}: {dashed?: boolean} = {}): THREE.LineSegments {

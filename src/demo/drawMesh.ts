@@ -5,10 +5,10 @@ import { buildGrid } from '../three/objects';
 
 export default function initDrawMesh() {
     const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
-    const {scene, renderer, camera} = initThree(canvas);
+    const {scene, renderer, camera, viewHeight, viewWidth} = initThree(canvas);
 
     // setup the grid
-    const gridObjs = buildGrid(-50, 50, 1);
+    const gridObjs = buildGrid(viewWidth, viewHeight);
 
     // create meshes
     let mesh = buildSquareMesh(new Vector2(-5, -5), 20);
@@ -84,7 +84,9 @@ function buildSquareMesh(pos: Vector2, sideL: number): VertexEdge1DMesh {
 type ThreeContext = {
     renderer: THREE.WebGLRenderer,
     camera: THREE.Camera,
-    scene: THREE.Scene
+    scene: THREE.Scene,
+    viewWidth: number,
+    viewHeight: number
 };
 
 function initThree(canvas: HTMLCanvasElement): ThreeContext {
@@ -109,12 +111,14 @@ function initThree(canvas: HTMLCanvasElement): ThreeContext {
     camera.lookAt(0, 0, 0);
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x2e2e2e);
+    scene.background = new THREE.Color(0xffffff);
 
     return {
         renderer,
         camera,
-        scene
+        scene,
+        viewWidth: desiredHalfWidth * 2,
+        viewHeight: desiredHalfHeight * 2
     }
 }
 
