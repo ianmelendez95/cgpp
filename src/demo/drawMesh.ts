@@ -23,13 +23,17 @@ export default function initDrawMesh() {
     const raycaster = new THREE.Raycaster();
 
     window.addEventListener('mousemove', (event: MouseEvent) => {
+        const mousePos = getNormalizedMousePos(canvas, event.clientX, event.clientY);
         raycaster.setFromCamera(
-            getNormalizedMousePos(canvas, event.clientX, event.clientY), 
+            mousePos, 
             camera
         );
 
         const [intersection] = raycaster.intersectObject(grid.backboard, false);
-        console.log(`Intersected: (${intersection.point.x}, ${intersection.point.y})`)
+        if (intersection) {
+            console.log(`Mouse:       (${mousePos.x}, ${mousePos.y})`)
+            console.log(`Intersected: (${intersection.point.x}, ${intersection.point.y})`)
+        }
     });
 }
 
