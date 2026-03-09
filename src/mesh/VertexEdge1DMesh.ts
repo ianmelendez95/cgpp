@@ -27,6 +27,24 @@ export default class VertexEdge1DMesh {
         ] as [Vector2, Vector2]))];
     }
 
+    findNearestVertex(point: Vector2): Vector2 {
+        if (this.vertices.length === 0) {
+            throw new Error('No vertices');
+        }
+
+        let nearestDistance = this.vertices[0].distanceToSquared(point);
+        let nearestVertex = 0;
+        for (let i = 1; i < this.vertices.length; i++) {
+            const vertexDistance = this.vertices[i].distanceToSquared(point);
+            if (vertexDistance < nearestDistance) {
+                nearestDistance = vertexDistance;
+                nearestVertex = i;
+            }
+        }
+
+        return this.vertices[nearestVertex];
+    }
+
     /**
      * @deprecated prefer getEdgeVertices().flat();
      */

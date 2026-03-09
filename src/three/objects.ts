@@ -1,15 +1,10 @@
 import * as THREE from 'three';
 import {Vector2, Vector3} from 'three';
 
-export type Grid = {
-    backboard: THREE.Object3D,
-    content: THREE.Object3D
-}
-
 export function buildGrid(
     width: number,
     height: number,
-): Grid {
+): THREE.Object3D {
     let backboard = new THREE.Mesh(
         new THREE.PlaneGeometry(width, height),
         new THREE.MeshBasicMaterial({color: 0x2e2e2e, side: THREE.DoubleSide})
@@ -59,13 +54,10 @@ export function buildGrid(
         ticks = new THREE.LineSegments(ticksGeometry, ticksMaterial);
     }
 
-    const content = new THREE.Object3D();
-
     backboard.add(dotsObj);
     backboard.add(ticks);
-    backboard.add(content);
 
-    return {backboard, content};
+    return backboard;
 }
 
 export function buildSegments(points: Vector3[] | Vector2[], {dashed = false}: {dashed?: boolean} = {}): THREE.LineSegments {

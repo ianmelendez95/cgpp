@@ -10,18 +10,26 @@ export default function initDrawMesh() {
     // setup the grid
     const grid = buildGrid(viewWidth, viewHeight);
 
+    const workingMesh = new THREE.Object3D();
+
     // create meshes
-    let mesh = buildSquareMesh(new Vector2(-5, -5), 20);
+    let mesh = buildSquareMesh(new Vector2(-10, -10), 20);
 
     let {points, segments} = meshToPointSegments(mesh);
 
-    grid.content.add(points, segments);
+    workingMesh.add(points, segments);
 
-    scene.add(grid.backboard);
+    const nearestVertexGeometry = new THREE.BufferGeometry().setFromPoints([mesh.getVertexPoint(0)])
+    const nearestVertexPoint = new THREE.Points(
+        nearestVertexGeometry,
+        new THREE.PointsMaterial({sizeAttenuation: false, color: 0xff0000, size: 12})
+    );
+
+    scene.add(grid, workingMesh, nearestVertexPoint);
     renderer.render(scene, camera);
 
     const raycaster = new THREE.Raycaster();
-
+    const mousePos = new THREE.Vector2();
     window.addEventListener('mousemove', (event: MouseEvent) => {
         const mousePos = getNormalizedMousePos(canvas, event.clientX, event.clientY);
         raycaster.setFromCamera(
@@ -29,10 +37,14 @@ export default function initDrawMesh() {
             camera
         );
 
-        const [intersection] = raycaster.intersectObject(grid.backboard, false);
+        const [intersection] = raycaster.intersectObject(grid, false);
         if (intersection) {
-            console.log(`Mouse:       (${mousePos.x}, ${mousePos.y})`)
-            console.log(`Intersected: (${intersection.point.x}, ${intersection.point.y})`)
+            mousePos.set(intersection.point.x, intersection.point.y);
+
+            const nearestVertex = mesh.findNearestVertex(mousePos);
+            nearestVertexGeometry.setFromPoints([nearestVertex]);
+            renderer.render(scene, camera);
+            renderer.renderBufferDirect
         }
     });
 }
@@ -113,8 +125,8 @@ function initThree(canvas: HTMLCanvasElement): ThreeContext {
     const camera = new THREE.OrthographicCamera(
         -desiredHalfWidth, 
         desiredHalfWidth, 
-        -desiredHalfHeight, 
         desiredHalfHeight, 
+        -desiredHalfHeight, 
         1, 
         1000);
     camera.position.set(0, 0, 5);
