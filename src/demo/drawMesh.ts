@@ -1,14 +1,14 @@
 import * as THREE from 'three';
-import {Vector2, Vector3} from 'three';
+import {Vector2} from 'three';
 import VertexEdge1DMesh from '../mesh/VertexEdge1DMesh';
-import { newGridObjs, newPointsObj, buildSegments } from '../three/objects';
+import { buildGrid } from '../three/objects';
 
 export default function initDrawMesh() {
     const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
     const {scene, renderer, camera} = initThree(canvas);
 
     // setup the grid
-    const gridObjs = newGridObjs(-50, 50, 1);
+    const gridObjs = buildGrid(-50, 50, 1);
 
     // create meshes
     let mesh = buildSquareMesh(new Vector2(-5, -5), 20);
@@ -21,7 +21,23 @@ export default function initDrawMesh() {
         segments
     );
     renderer.render(scene, camera);
+
+    window.addEventListener('mousemove', (event: MouseEvent) => {
+        const raycaster = new THREE.Raycaster();
+
+        const rect = canvas.getBoundingClientRect();
+
+        const xRatio = (event.clientX - rect.left) / rect.width;
+        const yRatio = (event.clientY - rect.top) / rect.height;
+
+        const xNorm = (xRatio * 2) - 1;
+        const yNorm = -2 * yRatio + 1;
+
+        console.log(`Pos: (${xNorm}, ${yNorm})`);
+    });
 }
+
+
 
 function meshToPointSegments(mesh: VertexEdge1DMesh): {points: THREE.Points, segments: THREE.LineSegments} {
     const vertices = mesh.getVertices();

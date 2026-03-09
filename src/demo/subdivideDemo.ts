@@ -1,13 +1,13 @@
 import * as THREE from 'three';
 import {Vector2, Vector3} from 'three';
 import VertexEdge1DMesh from '../mesh/VertexEdge1DMesh';
-import { newGridObjs, newPointsObj, buildSegments } from '../three/objects';
+import { buildGrid, newPointsObj, buildSegments } from '../three/objects';
 
 export default function initSubdivideDemo() {
     const threeContext = new ThreeContext();
 
     // setup the grid
-    const gridObjs = newGridObjs(-50, 50, 1);
+    const gridObjs = buildGrid(-50, 50, 1);
 
     // initialize inputs
     initAlphaEl();

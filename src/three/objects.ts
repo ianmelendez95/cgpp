@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import {Vector2, Vector3} from 'three';
 
-export function newGridObjs(
+export function buildGrid(
     minXY: number, 
     maxXY: number, 
     spacing: number,
