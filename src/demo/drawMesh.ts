@@ -3,8 +3,9 @@ import {Vector2, Vector3} from 'three';
 import VertexEdge1DMesh from '../mesh/VertexEdge1DMesh';
 import { newGridObjs, newPointsObj, buildSegments } from '../three/objects';
 
-export default function initSubdivideDemo() {
-    const threeContext = new ThreeContext();
+export default function initDrawMesh() {
+    const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
+    const {scene, renderer, camera} = initThree(canvas);
 
     // setup the grid
     const gridObjs = newGridObjs(-50, 50, 1);
@@ -14,12 +15,12 @@ export default function initSubdivideDemo() {
 
     let {points, segments} = meshToPointSegments(mesh);
 
-    threeContext.scene.add(
+    scene.add(
         ...gridObjs,
         points,
         segments
     );
-    threeContext.render();
+    renderer.render(scene, camera);
 }
 
 function meshToPointSegments(mesh: VertexEdge1DMesh): {points: THREE.Points, segments: THREE.LineSegments} {
@@ -64,44 +65,28 @@ function buildSquareMesh(pos: Vector2, sideL: number): VertexEdge1DMesh {
     return mesh;
 }
 
-class ThreeContext {
-    renderer: THREE.WebGLRenderer;
-    camera: THREE.Camera;
-    scene: THREE.Scene;
+type ThreeContext = {
+    renderer: THREE.WebGLRenderer,
+    camera: THREE.Camera,
+    scene: THREE.Scene
+};
 
-    constructor() {
-        const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
+function initThree(canvas: HTMLCanvasElement): ThreeContext {
+    const renderer = new THREE.WebGLRenderer({antialias: false, canvas});
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
-        const renderer = new THREE.WebGLRenderer({antialias: false, canvas});
-        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    const camera = new THREE.PerspectiveCamera( 45, canvas.clientWidth / canvas.clientHeight, 1, 500 );
+    camera.position.set(0, 0, 25);
+    camera.lookAt(0, 0, 0);
 
-        const camera = new THREE.PerspectiveCamera( 45, canvas.clientWidth / canvas.clientHeight, 1, 500 );
-        camera.position.set(0, 0, 25);
-        camera.lookAt(0, 0, 0);
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x2e2e2e);
 
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x2e2e2e);
-
-        this.renderer = renderer;
-        this.camera = camera;
-        this.scene = scene;
-    }
-
-    clearScene() {
-        this.scene.clear();
-        // const scene = new THREE.Scene();
-        // scene.background = new THREE.Color(0x2e2e2e);
-
-        // this.scene = scene;
-    }
-
-    addObjects(...objects: THREE.Object3D[]) {
-        this.scene.add(...objects);
-    }
-
-    render() {
-        this.renderer.render(this.scene, this.camera);
+    return {
+        renderer,
+        camera,
+        scene
     }
 }
 
-initSubdivideDemo();
+initDrawMesh();
