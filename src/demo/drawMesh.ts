@@ -11,7 +11,7 @@ export default function initDrawMesh() {
     const gridObjs = newGridObjs(-50, 50, 1);
 
     // create meshes
-    let mesh = buildSquareMesh(new Vector2(-5, -5), 10);
+    let mesh = buildSquareMesh(new Vector2(-5, -5), 20);
 
     let {points, segments} = meshToPointSegments(mesh);
 
@@ -72,11 +72,24 @@ type ThreeContext = {
 };
 
 function initThree(canvas: HTMLCanvasElement): ThreeContext {
-    const renderer = new THREE.WebGLRenderer({antialias: false, canvas});
+    const renderer = new THREE.WebGLRenderer({
+        antialias: false, 
+        canvas
+    });
+
     renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
-    const camera = new THREE.PerspectiveCamera( 45, canvas.clientWidth / canvas.clientHeight, 1, 500 );
-    camera.position.set(0, 0, 25);
+    const aspect = canvas.clientWidth / canvas.clientHeight;
+    const desiredHalfHeight = 20;
+    const desiredHalfWidth = desiredHalfHeight * aspect;
+    const camera = new THREE.OrthographicCamera(
+        -desiredHalfWidth, 
+        desiredHalfWidth, 
+        -desiredHalfHeight, 
+        desiredHalfHeight, 
+        1, 
+        1000);
+    camera.position.set(0, 0, 5);
     camera.lookAt(0, 0, 0);
 
     const scene = new THREE.Scene();
