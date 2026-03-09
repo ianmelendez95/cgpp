@@ -51,7 +51,7 @@ export function newGridObjs(
     return [dotsObj, ticks];
 }
 
-export function newSegmentsObj(points: Vector3[] | Vector2[], {dashed = false}: {dashed?: boolean} = {}): THREE.LineSegments {
+export function buildSegments(points: Vector3[] | Vector2[], {dashed = false}: {dashed?: boolean} = {}): THREE.LineSegments {
     const material = dashed 
         ? new THREE.LineDashedMaterial({color: 0x505050, scale: 1, gapSize: 0.1, dashSize: 0.5})
         : new THREE.LineBasicMaterial({color: 0xffffff});

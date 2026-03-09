@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Subdivide Demo</title>
+  <title>Mesh Editor Demo</title>
   <style>
     * {
       box-sizing: border-box;
@@ -55,24 +55,9 @@
 
 <body>
   <div id="screen-container">
-    <div id="toolbar">
-      <input id="subdivide-button" type="button" class="toolbar-input" value="Subdivide"/>
-      <div class="toolbar-input" style="display: flex; flex-direction: column; align-items: center;">
-        <input 
-          id="alpha-range" 
-          type="range" 
-          class="toolbar-input" 
-          value="0.5"
-          min="0"
-          max="1"
-          step="0.01"
-        />
-        <div id="alpha-display" style="color: #ffffff">0.5</div>
-      </div>
-    </div>
     <canvas id="cgpp-canvas"></canvas>
   </div>
-  <script type="module" src="../src/demo/subdivideDemo.ts"></script>
+  <script type="module" src="../src/demo/drawMesh.ts"></script>
 </body>
 
 </html>

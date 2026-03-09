@@ -16,15 +16,22 @@ export default class VertexEdge1DMesh {
         return newMesh;
     }
 
+    getVertices(): Vector2[] {
+        return [...this.vertices.map(v => v.clone())];
+    }
+
+    getEdgeVertices(): [Vector2, Vector2][] {
+        return [...this.edges.map(([v1, v2]) => ([
+            this.vertices[v1].clone(), 
+            this.vertices[v2].clone()
+        ] as [Vector2, Vector2]))];
+    }
+
+    /**
+     * @deprecated prefer getEdgeVertices().flat();
+     */
     toPoints(): Vector2[] {
-        const points: Vector2[] = []
-        for (const [start, end] of this.edges) {
-            points.push(
-                this.vertices[start].clone(),
-                this.vertices[end].clone()
-            );
-        };
-        return points;
+        return this.getEdgeVertices().flat();
     }
 
     getVertexPoint(v: number): Vector2 {

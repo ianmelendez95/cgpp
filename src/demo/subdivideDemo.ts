@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import {Vector2, Vector3} from 'three';
 import VertexEdge1DMesh from '../mesh/VertexEdge1DMesh';
-import { newGridObjs, newPointsObj, newSegmentsObj } from '../three/objects';
+import { newGridObjs, newPointsObj, buildSegments } from '../three/objects';
 
 export default function initSubdivideDemo() {
     const threeContext = new ThreeContext();
@@ -18,8 +18,8 @@ export default function initSubdivideDemo() {
     let subdivMesh = mesh.subdividedManifold(readAlpha());
 
     // create Three objs
-    let mainObj = newSegmentsObj(mesh.toPoints());
-    let subdivObj = newSegmentsObj(subdivMesh.toPoints(), {dashed: true});
+    let mainObj = buildSegments(mesh.toSegments());
+    let subdivObj = buildSegments(subdivMesh.toSegments(), {dashed: true});
 
     threeContext.scene.add(
         ...gridObjs,
@@ -30,7 +30,7 @@ export default function initSubdivideDemo() {
 
     onAlphaChange((newAlpha) => {
         subdivMesh = mesh.subdividedManifold(newAlpha);
-        subdivObj.geometry.setFromPoints(subdivMesh.toPoints());
+        subdivObj.geometry.setFromPoints(subdivMesh.toSegments());
         threeContext.render();
     });
 
@@ -38,8 +38,8 @@ export default function initSubdivideDemo() {
         mesh = subdivMesh;
         subdivMesh = mesh.subdividedManifold(readAlpha());
 
-        mainObj = newSegmentsObj(mesh.toPoints());
-        subdivObj = newSegmentsObj(subdivMesh.toPoints(), {dashed: true});
+        mainObj = buildSegments(mesh.toSegments());
+        subdivObj = buildSegments(subdivMesh.toSegments(), {dashed: true});
 
         threeContext.scene.clear();
         threeContext.scene.add(
