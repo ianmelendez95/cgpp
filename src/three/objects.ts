@@ -10,7 +10,7 @@ export function buildGrid(
         new THREE.MeshBasicMaterial({color: 0x2e2e2e, side: THREE.DoubleSide})
     );
 
-    const maxXY = Math.max(width, height) / 2;
+    const maxXY = Math.ceil(Math.max(width, height) / 2);
 
     let dotsObj; {
         const gridPoints = [];
