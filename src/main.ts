@@ -1,2 +1,2 @@
 
-window.location.assign('/demo/subdivide.html');
+window.location.assign('/demo/drawMesh.html');
