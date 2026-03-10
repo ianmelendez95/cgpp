@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {Vector2} from 'three';
 import VertexEdge1DMesh from '../mesh/VertexEdge1DMesh';
 import { buildGrid } from '../three/objects';
+import { select } from 'three/tsl';
 
 export default function initDrawMesh() {
     const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
@@ -70,6 +71,9 @@ export default function initDrawMesh() {
     });
 
     canvas.addEventListener('click', (event) => {
+        selectedVertex.set(nearestVertex.x, nearestVertex.y);
+        selectedVertexBuffer.setXY(0, selectedVertex.x, selectedVertex.y);
+        selectedVertexBuffer.needsUpdate = true;
     });
 }
 
