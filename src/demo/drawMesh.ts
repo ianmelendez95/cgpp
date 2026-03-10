@@ -53,8 +53,12 @@ export default function initDrawMesh() {
         if (intersection) {
             mousePos.set(intersection.point.x, intersection.point.y);
 
-            mesh.setNearestVertexAttribute(nearestVertexBuffer, 0, mousePos);
-            nearestVertexBuffer.needsUpdate = true;
+            const {position, distance} = mesh.findNearestVertex(mousePos);
+            if (distance < 10) {
+                nearestVertex.set(position.x, position.y);
+                nearestVertexBuffer.setXY(0, nearestVertex.x, nearestVertex.y);
+                nearestVertexBuffer.needsUpdate = true;
+            }
 
             renderer.render(scene, camera);
         }

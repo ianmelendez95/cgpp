@@ -28,7 +28,7 @@ export default class VertexEdge1DMesh {
         ] as [Vector2, Vector2]))];
     }
 
-    findNearestVertex(point: Vector2): Vector2 {
+    findNearestVertex(point: Vector2): {position: Vector2, distance: number} {
         if (this.vertices.length === 0) {
             throw new Error('No vertices');
         }
@@ -43,7 +43,10 @@ export default class VertexEdge1DMesh {
             }
         }
 
-        return this.vertices[nearestVertex];
+        return {
+            position: this.vertices[nearestVertex],
+            distance: nearestDistance
+        };
     }
 
     setNearestVertexAttribute(buffer: THREE.BufferAttribute, index: number, testPoint: Vector2): number {
