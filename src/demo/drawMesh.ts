@@ -31,10 +31,12 @@ export default function initDrawMesh() {
     const selectedVertex = nearestVertex.clone();
     const selectedVertexBuffer = new THREE.Float32BufferAttribute([selectedVertex.x, selectedVertex.y, 0], 3);
     const selectedVertexGeometry = new THREE.BufferGeometry();
+    const selectedVertexMaterial = 
+        new THREE.PointsMaterial({sizeAttenuation: false, color: 0x00ff00, size: 10});
     selectedVertexGeometry.setAttribute('position', selectedVertexBuffer);
     const selectedVertexPoint = new THREE.Points(
         selectedVertexGeometry,
-        new THREE.PointsMaterial({sizeAttenuation: false, color: 0x00ff00, size: 10})
+        selectedVertexMaterial
     );
 
     scene.add(grid, workingMesh, nearestVertexPoint, selectedVertexPoint);
@@ -55,6 +57,9 @@ export default function initDrawMesh() {
 
             const {position, distance} = mesh.findNearestVertex(mousePos);
             if (distance < 10) {
+                const isSelectedVertex = position.equals(selectedVertex);
+                selectedVertexMaterial.size = isSelectedVertex ? 12 : 10;
+
                 nearestVertex.set(position.x, position.y);
                 nearestVertexBuffer.setXY(0, nearestVertex.x, nearestVertex.y);
                 nearestVertexBuffer.needsUpdate = true;
