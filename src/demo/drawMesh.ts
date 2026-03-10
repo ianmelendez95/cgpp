@@ -19,21 +19,33 @@ export default function initDrawMesh() {
 
     workingMesh.add(points, segments);
 
-    const nearestVertexGeometry = new THREE.BufferGeometry().setFromPoints([mesh.getVertexPoint(0)])
+    const nearestVertex = mesh.getVertexPoint(0);
+    const nearestVertexBuffer = new THREE.Float32BufferAttribute([nearestVertex.x, nearestVertex.y, 0], 3);
+    const nearestVertexGeometry = new THREE.BufferGeometry();
+    nearestVertexGeometry.setAttribute('position', nearestVertexBuffer);
     const nearestVertexPoint = new THREE.Points(
         nearestVertexGeometry,
         new THREE.PointsMaterial({sizeAttenuation: false, color: 0xff0000, size: 12})
     );
 
-    scene.add(grid, workingMesh, nearestVertexPoint);
+    const selectedVertex = nearestVertex.clone();
+    const selectedVertexBuffer = new THREE.Float32BufferAttribute([selectedVertex.x, selectedVertex.y, 0], 3);
+    const selectedVertexGeometry = new THREE.BufferGeometry();
+    selectedVertexGeometry.setAttribute('position', selectedVertexBuffer);
+    const selectedVertexPoint = new THREE.Points(
+        selectedVertexGeometry,
+        new THREE.PointsMaterial({sizeAttenuation: false, color: 0x00ff00, size: 10})
+    );
+
+    scene.add(grid, workingMesh, nearestVertexPoint, selectedVertexPoint);
     renderer.render(scene, camera);
 
     const raycaster = new THREE.Raycaster();
     const mousePos = new THREE.Vector2();
     window.addEventListener('mousemove', (event: MouseEvent) => {
-        const mousePos = getNormalizedMousePos(canvas, event.clientX, event.clientY);
+        const ndcMousePos = getNDCMousePos(canvas, event.clientX, event.clientY);
         raycaster.setFromCamera(
-            mousePos, 
+            ndcMousePos, 
             camera
         );
 
@@ -41,15 +53,18 @@ export default function initDrawMesh() {
         if (intersection) {
             mousePos.set(intersection.point.x, intersection.point.y);
 
-            const nearestVertex = mesh.findNearestVertex(mousePos);
-            nearestVertexGeometry.setFromPoints([nearestVertex]);
+            mesh.setNearestVertexAttribute(nearestVertexBuffer, 0, mousePos);
+            nearestVertexBuffer.needsUpdate = true;
+
             renderer.render(scene, camera);
-            renderer.renderBufferDirect
         }
+    });
+
+    canvas.addEventListener('click', (event) => {
     });
 }
 
-function getNormalizedMousePos(canvas: HTMLCanvasElement, mouseX: number, mouseY: number) {
+function getNDCMousePos(canvas: HTMLCanvasElement, mouseX: number, mouseY: number): THREE.Vector2 {
         const rect = canvas.getBoundingClientRect();
 
         const xRatio = (mouseX - rect.left) / rect.width;

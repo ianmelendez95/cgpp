@@ -1,4 +1,5 @@
 import {Vector2} from 'three';
+import * as THREE from 'three';
 import { deleteElem, deleteIdx } from './arrays';
 
 export default class VertexEdge1DMesh {
@@ -45,6 +46,29 @@ export default class VertexEdge1DMesh {
         return this.vertices[nearestVertex];
     }
 
+    setNearestVertexAttribute(buffer: THREE.BufferAttribute, index: number, testPoint: Vector2): number {
+        if (this.vertices.length === 0) {
+            throw new Error('No vertices');
+        }
+
+        let nearestDistance = this.vertices[0].distanceToSquared(testPoint);
+        let nearestVertex = 0;
+        for (let i = 1; i < this.vertices.length; i++) {
+            const vertexDistance = this.vertices[i].distanceToSquared(testPoint);
+            if (vertexDistance < nearestDistance) {
+                nearestDistance = vertexDistance;
+                nearestVertex = i;
+            }
+        }
+
+        buffer.setXY(
+            index,
+            this.vertices[nearestVertex].x, 
+            this.vertices[nearestVertex].y
+        );
+        return nearestDistance;
+    }
+
     /**
      * @deprecated prefer getEdgeVertices().flat();
      */
@@ -53,7 +77,7 @@ export default class VertexEdge1DMesh {
     }
 
     getVertexPoint(v: number): Vector2 {
-        return this.vertices[v];
+        return this.vertices[v].clone();
     }
 
     insertVertex(x: number | Vector2, y?: number): number {
