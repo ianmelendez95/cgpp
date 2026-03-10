@@ -20,27 +20,17 @@ export default function initDrawMesh() {
 
     workingMesh.add(points, segments);
 
-    const nearestVertex = mesh.getVertexPoint(0);
-    const nearestVertexBuffer = new THREE.Float32BufferAttribute([nearestVertex.x, nearestVertex.y, 0], 3);
-    const nearestVertexGeometry = new THREE.BufferGeometry();
-    nearestVertexGeometry.setAttribute('position', nearestVertexBuffer);
-    const nearestVertexPoint = new THREE.Points(
-        nearestVertexGeometry,
-        new THREE.PointsMaterial({sizeAttenuation: false, color: 0xff0000, size: 12})
-    );
+    const initialSelectedVertex = mesh.getVertexPoint(0);
 
-    const selectedVertex = nearestVertex.clone();
-    const selectedVertexBuffer = new THREE.Float32BufferAttribute([selectedVertex.x, selectedVertex.y, 0], 3);
-    const selectedVertexGeometry = new THREE.BufferGeometry();
-    const selectedVertexMaterial = 
-        new THREE.PointsMaterial({sizeAttenuation: false, color: 0x00ff00, size: 10});
-    selectedVertexGeometry.setAttribute('position', selectedVertexBuffer);
-    const selectedVertexPoint = new THREE.Points(
-        selectedVertexGeometry,
-        selectedVertexMaterial
-    );
+    const nearestVertexPoint = new FastPoint(initialSelectedVertex);
+    nearestVertexPoint.material.color.set(0xff0000);
+    nearestVertexPoint.material.size = 12;
 
-    scene.add(grid, workingMesh, nearestVertexPoint, selectedVertexPoint);
+    const selectedVertexPoint = new FastPoint(initialSelectedVertex);
+    selectedVertexPoint.material.color.set(0x00ff00);
+    selectedVertexPoint.material.size = 10;
+
+    scene.add(grid, workingMesh, nearestVertexPoint.object, selectedVertexPoint.object);
     renderer.render(scene, camera);
 
     const raycaster = new THREE.Raycaster();
@@ -58,12 +48,10 @@ export default function initDrawMesh() {
 
             const {position, distance} = mesh.findNearestVertex(mousePos);
             if (distance < 10) {
-                const isSelectedVertex = position.equals(selectedVertex);
-                selectedVertexMaterial.size = isSelectedVertex ? 12 : 10;
+                const isSelectedVertex = position.equals(selectedVertexPoint.getPosition());
+                selectedVertexPoint.material.size = isSelectedVertex ? 12 : 10;
 
-                nearestVertex.set(position.x, position.y);
-                nearestVertexBuffer.setXY(0, nearestVertex.x, nearestVertex.y);
-                nearestVertexBuffer.needsUpdate = true;
+                nearestVertexPoint.updatePosition(position);
             }
 
             renderer.render(scene, camera);
@@ -71,10 +59,34 @@ export default function initDrawMesh() {
     });
 
     canvas.addEventListener('click', (event) => {
-        selectedVertex.set(nearestVertex.x, nearestVertex.y);
-        selectedVertexBuffer.setXY(0, selectedVertex.x, selectedVertex.y);
-        selectedVertexBuffer.needsUpdate = true;
     });
+}
+
+class FastPoint {
+    buffer: THREE.BufferAttribute;
+    geometry: THREE.BufferGeometry;
+    material: THREE.PointsMaterial;
+    object: THREE.Points;
+
+    constructor(initialPosition: THREE.Vector2) {
+        this.geometry = new THREE.BufferGeometry();
+
+        this.buffer = new THREE.Float32BufferAttribute([initialPosition.x, initialPosition.y, 0], 3);
+        this.geometry.setAttribute('position', this.buffer);
+
+        this.material = new THREE.PointsMaterial({sizeAttenuation: false, color: 0xe0e0e0, size: 5})
+
+        this.object = new THREE.Points(this.geometry, this.material);
+    }
+
+    getPosition(): Vector2 {
+        return new Vector2(this.buffer.getX(0), this.buffer.getY(0));
+    }
+
+    updatePosition(position: Vector2) {
+        this.buffer.setXY(0, position.x, position.y);
+        this.buffer.needsUpdate = true;
+    }
 }
 
 function getNDCMousePos(canvas: HTMLCanvasElement, mouseX: number, mouseY: number): THREE.Vector2 {
