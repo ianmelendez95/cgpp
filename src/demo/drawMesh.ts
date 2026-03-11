@@ -20,13 +20,13 @@ export default function initDrawMesh() {
 
     workingMesh.add(points, segments);
 
-    const initialSelectedVertex = mesh.getVertexPoint(0);
-
-    const nearVertexPoint = new FastPoint(initialSelectedVertex);
+    let nearVertexIndex = -1;
+    const nearVertexPoint = new FastPoint();
     nearVertexPoint.material.color.set(0xff0000);
     nearVertexPoint.material.size = 12;
 
-    const selectedVertexPoint = new FastPoint(initialSelectedVertex);
+    let selectedVertexIndex = 0;
+    const selectedVertexPoint = new FastPoint(mesh.getVertexPoint(selectedVertexIndex));
     selectedVertexPoint.material.color.set(0x00ff00);
     selectedVertexPoint.material.size = 10;
 
@@ -46,15 +46,19 @@ export default function initDrawMesh() {
         if (intersection) {
             mousePos.set(intersection.point.x, intersection.point.y);
 
-            const {position, distanceSquared} = mesh.findNearestVertex(mousePos);
+            const {index, position, distanceSquared} = mesh.findNearestVertex(mousePos);
             if (distanceSquared < 1) {
+                console.log('Near vertex');
                 const isSelectedVertex = position.equals(selectedVertexPoint.getPosition());
 
                 selectedVertexPoint.material.size = isSelectedVertex ? 12 : 10;
                 nearVertexPoint.updatePosition(position);
+                nearVertexIndex = index;
             } else {
+                console.log('Not near vertex');
                 selectedVertexPoint.material.size = 10;
-                nearVertexPoint.moveOffScreen();
+                nearVertexPoint.hide();
+                nearVertexIndex = -1;
             }
 
             renderer.render(scene, camera);
@@ -64,17 +68,24 @@ export default function initDrawMesh() {
     canvas.addEventListener('click', (event) => {
         if (event.shiftKey) {
             // adding/connecting a vertex
-            if (nearVertexPoint.distanceToSquared(mousePos) < 10) {
-
+            if (nearVertexPoint.isOffScreen()) {
+                // not near any point, so add a new vertex
+                mesh.insertVertex(mousePos);
             }
+        } else if (nearVertexIndex !== -1) {
+            nearVertexPoint.hide();
+
+            selectedVertexPoint.copyPosition(nearVertexPoint);
+            selectedVertexIndex = nearVertexIndex;
+            selectedVertexPoint.material.size = 12;
         }
 
-        selectedVertexPoint.copyPosition(nearVertexPoint);
+        renderer.render(scene, camera);
     });
 }
 
 class FastPoint {
-    static OFFSCREEN_POS = new Vector2(10000, 10000);
+    static ORIGIN = new Vector2(0, 0);
 
     buffer: Float32Array;
     attribute: THREE.BufferAttribute;
@@ -82,7 +93,13 @@ class FastPoint {
     material: THREE.PointsMaterial;
     object: THREE.Points;
 
-    constructor(initialPosition: THREE.Vector2) {
+    constructor(initialPosition?: THREE.Vector2) {
+        let hide = false;
+        if (!initialPosition) {
+            hide = true;
+            initialPosition = FastPoint.ORIGIN;
+        }
+
         this.geometry = new THREE.BufferGeometry();
 
         this.buffer = new Float32Array([initialPosition.x, initialPosition.y, 0]);
@@ -92,6 +109,10 @@ class FastPoint {
         this.material = new THREE.PointsMaterial({sizeAttenuation: false, color: 0xe0e0e0, size: 5})
 
         this.object = new THREE.Points(this.geometry, this.material);
+
+        if (hide) {
+            this.object.visible = false;
+        }
     }
 
     copyPosition(src: FastPoint) {
@@ -107,10 +128,15 @@ class FastPoint {
     updatePosition(position: Vector2) {
         this.attribute.setXY(0, position.x, position.y);
         this.attribute.needsUpdate = true;
+        this.show();
     }
 
-    moveOffScreen() {
-        this.updatePosition(FastPoint.OFFSCREEN_POS);
+    hide() {
+        this.object.visible = false;
+    }
+
+    show() {
+        this.object.visible = true;
     }
 
     isOffScreen() {

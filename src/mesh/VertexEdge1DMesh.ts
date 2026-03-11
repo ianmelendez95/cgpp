@@ -28,7 +28,7 @@ export default class VertexEdge1DMesh {
         ] as [Vector2, Vector2]))];
     }
 
-    findNearestVertex(point: Vector2): {position: Vector2, distanceSquared: number} {
+    findNearestVertex(point: Vector2): {index: number, position: Vector2, distanceSquared: number} {
         if (this.vertices.length === 0) {
             throw new Error('No vertices');
         }
@@ -44,6 +44,7 @@ export default class VertexEdge1DMesh {
         }
 
         return {
+            index: nearestVertex,
             position: this.vertices[nearestVertex],
             distanceSquared: nearestDistance
         };
