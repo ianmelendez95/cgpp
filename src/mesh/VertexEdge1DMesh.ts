@@ -88,7 +88,7 @@ export default class VertexEdge1DMesh {
         if (typeof x === 'number') {
             this.vertices.push(new Vector2(x, y));
         } else {
-            this.vertices.push(x);
+            this.vertices.push(x.clone());
         }
 
         this.neighbors.push([]);

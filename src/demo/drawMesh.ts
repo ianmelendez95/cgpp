@@ -3,6 +3,7 @@ import {Vector2} from 'three';
 import VertexEdge1DMesh from '../mesh/VertexEdge1DMesh';
 import { buildGrid } from '../three/objects';
 import { select } from 'three/tsl';
+import _ from 'lodash';
 
 export default function initDrawMesh() {
     const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
@@ -24,11 +25,13 @@ export default function initDrawMesh() {
     const nearVertexPoint = new FastPoint();
     nearVertexPoint.material.color.set(0xff0000);
     nearVertexPoint.material.size = 12;
+    nearVertexPoint.object.renderOrder = 1;
 
     let selectedVertexIndex = 0;
     const selectedVertexPoint = new FastPoint(mesh.getVertexPoint(selectedVertexIndex));
     selectedVertexPoint.material.color.set(0x00ff00);
     selectedVertexPoint.material.size = 10;
+    selectedVertexPoint.object.renderOrder = 2;
 
     scene.add(grid, workingMesh, nearVertexPoint.object, selectedVertexPoint.object);
     renderer.render(scene, camera);
@@ -68,13 +71,25 @@ export default function initDrawMesh() {
     canvas.addEventListener('click', (event) => {
         if (event.shiftKey) {
             // adding/connecting a vertex
-            if (nearVertexPoint.isOffScreen()) {
-                // not near any point, so add a new vertex
-                mesh.insertVertex(mousePos);
-            }
-        } else if (nearVertexIndex !== -1) {
-            nearVertexPoint.hide();
 
+            if (nearVertexIndex === -1) {
+                // not near any point, so add a new vertex
+                const newVertexIndex = mesh.insertVertex(mousePos);
+                mesh.insertEdge(selectedVertexIndex, newVertexIndex);
+            } else {
+                const existingEdge = mesh.findEdge(selectedVertexIndex, nearVertexIndex);
+                if (!_.isNil(existingEdge)) {
+                    mesh.deleteEdge(existingEdge);
+                } else {
+                    mesh.insertEdge(selectedVertexIndex, nearVertexIndex);
+                }
+            }
+
+            // recreate mesh in scene
+            let {points, segments} = meshToPointSegments(mesh);
+            workingMesh.clear();
+            workingMesh.add(points, segments);
+        } else if (nearVertexIndex !== -1) {
             selectedVertexPoint.copyPosition(nearVertexPoint);
             selectedVertexIndex = nearVertexIndex;
             selectedVertexPoint.material.size = 12;
@@ -139,8 +154,8 @@ class FastPoint {
         this.object.visible = true;
     }
 
-    isOffScreen() {
-        return this.getPosition().equals(FastPoint.OFFSCREEN_POS);
+    isHidden() {
+        return !this.object.visible;
     }
 
     samePosition(that: FastPoint) {
