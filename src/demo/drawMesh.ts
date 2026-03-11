@@ -12,7 +12,7 @@ export default function initDrawMesh() {
     // setup the grid
     const grid = buildGrid(viewWidth, viewHeight);
 
-    const workingMesh = new THREE.Object3D();
+    const workingMesh = new THREE.Group();
 
     // create meshes
     let mesh = buildSquareMesh(new Vector2(-10, -10), 20);
