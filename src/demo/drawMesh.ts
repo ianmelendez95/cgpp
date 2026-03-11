@@ -22,15 +22,15 @@ export default function initDrawMesh() {
 
     const initialSelectedVertex = mesh.getVertexPoint(0);
 
-    const nearestVertexPoint = new FastPoint(initialSelectedVertex);
-    nearestVertexPoint.material.color.set(0xff0000);
-    nearestVertexPoint.material.size = 12;
+    const nearVertexPoint = new FastPoint(initialSelectedVertex);
+    nearVertexPoint.material.color.set(0xff0000);
+    nearVertexPoint.material.size = 12;
 
     const selectedVertexPoint = new FastPoint(initialSelectedVertex);
     selectedVertexPoint.material.color.set(0x00ff00);
     selectedVertexPoint.material.size = 10;
 
-    scene.add(grid, workingMesh, nearestVertexPoint.object, selectedVertexPoint.object);
+    scene.add(grid, workingMesh, nearVertexPoint.object, selectedVertexPoint.object);
     renderer.render(scene, camera);
 
     const raycaster = new THREE.Raycaster();
@@ -46,12 +46,15 @@ export default function initDrawMesh() {
         if (intersection) {
             mousePos.set(intersection.point.x, intersection.point.y);
 
-            const {position, distance} = mesh.findNearestVertex(mousePos);
-            if (distance < 10) {
+            const {position, distanceSquared} = mesh.findNearestVertex(mousePos);
+            if (distanceSquared < 1) {
                 const isSelectedVertex = position.equals(selectedVertexPoint.getPosition());
-                selectedVertexPoint.material.size = isSelectedVertex ? 12 : 10;
 
-                nearestVertexPoint.updatePosition(position);
+                selectedVertexPoint.material.size = isSelectedVertex ? 12 : 10;
+                nearVertexPoint.updatePosition(position);
+            } else {
+                selectedVertexPoint.material.size = 10;
+                nearVertexPoint.moveOffScreen();
             }
 
             renderer.render(scene, camera);
@@ -59,11 +62,22 @@ export default function initDrawMesh() {
     });
 
     canvas.addEventListener('click', (event) => {
+        if (event.shiftKey) {
+            // adding/connecting a vertex
+            if (nearVertexPoint.distanceToSquared(mousePos) < 10) {
+
+            }
+        }
+
+        selectedVertexPoint.copyPosition(nearVertexPoint);
     });
 }
 
 class FastPoint {
-    buffer: THREE.BufferAttribute;
+    static OFFSCREEN_POS = new Vector2(10000, 10000);
+
+    buffer: Float32Array;
+    attribute: THREE.BufferAttribute;
     geometry: THREE.BufferGeometry;
     material: THREE.PointsMaterial;
     object: THREE.Points;
@@ -71,21 +85,44 @@ class FastPoint {
     constructor(initialPosition: THREE.Vector2) {
         this.geometry = new THREE.BufferGeometry();
 
-        this.buffer = new THREE.Float32BufferAttribute([initialPosition.x, initialPosition.y, 0], 3);
-        this.geometry.setAttribute('position', this.buffer);
+        this.buffer = new Float32Array([initialPosition.x, initialPosition.y, 0]);
+        this.attribute = new THREE.BufferAttribute(this.buffer, 3);
+        this.geometry.setAttribute('position', this.attribute);
 
         this.material = new THREE.PointsMaterial({sizeAttenuation: false, color: 0xe0e0e0, size: 5})
 
         this.object = new THREE.Points(this.geometry, this.material);
     }
 
+    copyPosition(src: FastPoint) {
+        this.buffer[0] = src.buffer[0];
+        this.buffer[1] = src.buffer[1];
+        this.attribute.needsUpdate = true;
+    }
+
     getPosition(): Vector2 {
-        return new Vector2(this.buffer.getX(0), this.buffer.getY(0));
+        return new Vector2(this.buffer[0], this.buffer[1]);
     }
 
     updatePosition(position: Vector2) {
-        this.buffer.setXY(0, position.x, position.y);
-        this.buffer.needsUpdate = true;
+        this.attribute.setXY(0, position.x, position.y);
+        this.attribute.needsUpdate = true;
+    }
+
+    moveOffScreen() {
+        this.updatePosition(FastPoint.OFFSCREEN_POS);
+    }
+
+    isOffScreen() {
+        return this.getPosition().equals(FastPoint.OFFSCREEN_POS);
+    }
+
+    samePosition(that: FastPoint) {
+        return this.buffer[0] === that.buffer[0] && this.buffer[1] === that.buffer[1];
+    }
+
+    distanceToSquared(position: Vector2) {
+        return this.getPosition().distanceToSquared(position);
     }
 }
 
