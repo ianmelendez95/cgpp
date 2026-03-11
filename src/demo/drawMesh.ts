@@ -76,6 +76,9 @@ export default function initDrawMesh() {
                 // not near any point, so add a new vertex
                 const newVertexIndex = mesh.insertVertex(mousePos);
                 mesh.insertEdge(selectedVertexIndex, newVertexIndex);
+
+                selectedVertexIndex = newVertexIndex;
+                selectedVertexPoint.updatePosition(mousePos);
             } else {
                 const existingEdge = mesh.findEdge(selectedVertexIndex, nearVertexIndex);
                 if (!_.isNil(existingEdge)) {
@@ -83,6 +86,9 @@ export default function initDrawMesh() {
                 } else {
                     mesh.insertEdge(selectedVertexIndex, nearVertexIndex);
                 }
+
+                selectedVertexIndex = nearVertexIndex;
+                selectedVertexPoint.updatePosition(nearVertexPoint.getPosition());
             }
 
             // recreate mesh in scene
