@@ -122,6 +122,18 @@ export default class VertexEdge1DMesh {
         }
     }
 
+    findEdge(vertex1: number, vertex2: number): null | number {
+        const neighborEdges = this.neighbors[vertex1];
+        for (const edge of neighborEdges) {
+            const neighborVertex = this.getOtherEnd(vertex1, edge);
+            if (neighborVertex === vertex2) {
+                return edge;
+            }
+        }
+
+        return null;
+    }
+
     getEdgeEndpoints(edge: number): [Vector2, Vector2] {
         const [start, end] = this.edges[edge];
         return [this.vertices[start], this.vertices[end]];
