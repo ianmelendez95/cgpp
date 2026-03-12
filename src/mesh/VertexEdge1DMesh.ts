@@ -13,7 +13,7 @@ export default class VertexEdge1DMesh {
         const newMesh = new VertexEdge1DMesh();
         newMesh.vertices = this.vertices.map(v => v.clone());
         newMesh.edges = this.edges.map(([v1, v2]) => [v1, v2]);
-        newMesh.neighbors = this.edges.map(ns => [...ns]);
+        newMesh.neighbors = this.neighbors.map(ns => [...ns]);
         return newMesh;
     }
 
@@ -48,29 +48,6 @@ export default class VertexEdge1DMesh {
             position: this.vertices[nearestVertex],
             distanceSquared: nearestDistance
         };
-    }
-
-    setNearestVertexAttribute(buffer: THREE.BufferAttribute, index: number, testPoint: Vector2): number {
-        if (this.vertices.length === 0) {
-            throw new Error('No vertices');
-        }
-
-        let nearestDistance = this.vertices[0].distanceToSquared(testPoint);
-        let nearestVertex = 0;
-        for (let i = 1; i < this.vertices.length; i++) {
-            const vertexDistance = this.vertices[i].distanceToSquared(testPoint);
-            if (vertexDistance < nearestDistance) {
-                nearestDistance = vertexDistance;
-                nearestVertex = i;
-            }
-        }
-
-        buffer.setXY(
-            index,
-            this.vertices[nearestVertex].x, 
-            this.vertices[nearestVertex].y
-        );
-        return nearestDistance;
     }
 
     /**
