@@ -12,17 +12,21 @@ class DrawMesh2D {
     camera: THREE.Camera;
 
     mesh: TriangleMesh;
-    nearVertexIndex: number;
-    tempVertexIndex: number;
+
     selectedVertexIndex: number;
+    selectedVertexPoint: FastPoint;
+
+    nearVertexIndex: number;
+    nearVertexPoint: FastPoint;
+
+    tempVertexIndex: number;
+    tempVertexPoint: FastPoint;
+    tempVertexLine: FastLine;
 
     mouseTracker: MouseTracker;
 
     grid: THREE.Object3D;
     workingMesh: THREE.Group;
-    nearVertexPoint: FastPoint;
-    tempVertexPoint: FastPoint;
-    selectedVertexPoint: FastPoint;
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
@@ -44,6 +48,11 @@ class DrawMesh2D {
 
         this.mouseTracker = new MouseTracker(canvas, this.camera, this.grid);
 
+        this.selectedVertexPoint = new FastPoint(this.mesh.getVertexPosition(this.selectedVertexIndex));
+        this.selectedVertexPoint.material.color.set(0x00ff00);
+        this.selectedVertexPoint.material.size = 10;
+        this.selectedVertexPoint.object.renderOrder = 2;
+
         this.nearVertexPoint = new FastPoint();
         this.nearVertexPoint.material.color.set(0xff0000);
         this.nearVertexPoint.material.size = 12;
@@ -52,18 +61,17 @@ class DrawMesh2D {
         this.tempVertexPoint = new FastPoint();
         this.tempVertexPoint.material.color.set(0xffff00);
         this.tempVertexPoint.material.size = 12;
-        this.nearVertexPoint.object.renderOrder = 1;
+        this.tempVertexPoint.object.renderOrder = 1;
 
-        this.selectedVertexPoint = new FastPoint(this.mesh.getVertexPosition(this.selectedVertexIndex));
-        this.selectedVertexPoint.material.color.set(0x00ff00);
-        this.selectedVertexPoint.material.size = 10;
-        this.selectedVertexPoint.object.renderOrder = 2;
+        this.tempVertexLine = new FastLine();
+        this.tempVertexLine.object.renderOrder = 2;
 
         this.scene.add(
             this.grid,
             this.workingMesh,
             this.nearVertexPoint.object,
-            this.selectedVertexPoint.object
+            this.selectedVertexPoint.object,
+            this.tempVertexLine.object
         );
     }
 
@@ -135,7 +143,21 @@ class DrawMesh2D {
     }
 
     handleShiftClick = () => {
+        if (this.tempVertexIndex === -1) {
+            // State 0: Only have a selected vertex
+            // Create/select the temporary vertex
 
+            let tempVertexIndex = -1;
+            if (this.nearVertexIndex === -1) {
+                // not near a vertex, so they want to create a new one
+                tempVertexIndex = this.mesh.insertVertex(this.mouseTracker.mousePos);
+            } else {
+                // they are near a vertex, so this is the temporary one
+                tempVertexIndex = this.nearVertexIndex;
+            }
+
+            const tempVertexPos = this.mouseTracker.mousePos;
+        }
     }
 
     static initThree(canvas: HTMLCanvasElement): ThreeContext {
@@ -327,6 +349,18 @@ class FastPoint {
     distanceToSquared(position: Vector2) {
         return this.getPosition().distanceToSquared(position);
     }
+}
+
+class FastLine {
+    object: THREE.Line;
+
+    constructor() {
+        this.object = new THREE.Line(
+            new THREE.BufferGeometry().setFromPoints([new Vector2(0, 0), new Vector2(2, 0)]),
+            new THREE.LineBasicMaterial({color: 0xffff00})
+        );
+    }
+
 }
 
 function getNDCMousePos(canvas: HTMLCanvasElement, mouseX: number, mouseY: number): THREE.Vector2 {
