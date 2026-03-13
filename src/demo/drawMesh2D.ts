@@ -58,19 +58,22 @@ class DrawMesh2D {
         this.nearVertexPoint.material.size = 12;
         this.nearVertexPoint.object.renderOrder = 1;
 
-        this.tempVertexPoint = new FastPoint();
+        this.tempVertexPoint = new FastPoint(new Vector2(1, 0));
         this.tempVertexPoint.material.color.set(0xffff00);
         this.tempVertexPoint.material.size = 12;
-        this.tempVertexPoint.object.renderOrder = 1;
+        this.tempVertexPoint.object.renderOrder = 2;
+        this.tempVertexPoint.show();
 
         this.tempVertexLine = new FastLine();
         this.tempVertexLine.object.renderOrder = 2;
+        this.tempVertexLine.object.visible = false;
 
         this.scene.add(
             this.grid,
             this.workingMesh,
             this.nearVertexPoint.object,
             this.selectedVertexPoint.object,
+            this.tempVertexPoint.object,
             this.tempVertexLine.object
         );
     }
@@ -144,20 +147,39 @@ class DrawMesh2D {
 
     handleShiftClick = () => {
         if (this.tempVertexIndex === -1) {
-            // State 0: Only have a selected vertex
             // Create/select the temporary vertex
+            console.log('Creating temporary vertex');
+            this.tempVertexIndex = this.nearVertexIndex !== -1
+                ? this.nearVertexIndex
+                : this.mesh.insertVertex(this.mouseTracker.mousePos);
 
-            let tempVertexIndex = -1;
-            if (this.nearVertexIndex === -1) {
-                // not near a vertex, so they want to create a new one
-                tempVertexIndex = this.mesh.insertVertex(this.mouseTracker.mousePos);
-            } else {
-                // they are near a vertex, so this is the temporary one
-                tempVertexIndex = this.nearVertexIndex;
-            }
+            this.tempVertexPoint.updatePosition(this.mesh.getVertexPosition(this.tempVertexIndex));
+        } else {
+            // Already have a temporary vertex, so completing the triangle
+            console.log('Finishing triangle');
+            const finalVertexIndex = this.nearVertexIndex !== -1
+                ? this.nearVertexIndex
+                : this.mesh.insertVertex(this.mouseTracker.mousePos);
 
-            const tempVertexPos = this.mouseTracker.mousePos;
+            // TODO: check if triangle exists, and delete it
+
+            this.mesh.insertTriangle(
+                this.selectedVertexIndex,
+                this.tempVertexIndex,
+                finalVertexIndex
+            );
+
+            this.workingMesh.clear();
+            this.workingMesh.add(this.mesh.toThree());
+
+            this.tempVertexIndex = -1;
+            this.tempVertexPoint.hide();
+
+            this.selectedVertexIndex = finalVertexIndex;
+            this.selectedVertexPoint.updatePosition(this.mesh.getVertexPosition(this.selectedVertexIndex));
         }
+
+        this.render();
     }
 
     static initThree(canvas: HTMLCanvasElement): ThreeContext {
@@ -361,6 +383,21 @@ class FastLine {
         );
     }
 
+    updateStart(pos: Vector2) {
+        const attr = this._getPositionAttribute();
+        attr.setXY(0, pos.x, pos.y);
+        attr.needsUpdate = true;
+    }
+
+    updateEnd(pos: Vector2) {
+        const attr = this._getPositionAttribute();
+        attr.setXY(1, pos.x, pos.y);
+        attr.needsUpdate = true;
+    }
+
+    _getPositionAttribute(): THREE.BufferAttribute {
+        return this.object.geometry.getAttribute('position') as THREE.BufferAttribute;
+    }
 }
 
 function getNDCMousePos(canvas: HTMLCanvasElement, mouseX: number, mouseY: number): THREE.Vector2 {
