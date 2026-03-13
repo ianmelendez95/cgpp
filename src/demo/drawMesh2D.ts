@@ -4,75 +4,151 @@ import { buildGrid } from '../three/objects';
 import _ from 'lodash';
 import TriangleMesh from '../mesh/TriangleMesh';
 
-export default function initDrawMesh() {
-    const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
-    const {scene, renderer, camera, viewHeight, viewWidth} = initThree(canvas);
+class DrawMesh2D {
+    scene: THREE.Scene;
+    renderer: THREE.WebGLRenderer;
+    camera: THREE.Camera;
 
-    // setup the grid
-    const grid = buildGrid(viewWidth, viewHeight);
+    mesh: TriangleMesh;
+    nearVertexIndex: number;
+    tempVertexIndex: number;
+    selectedVertexIndex: number;
 
-    const workingMesh = new THREE.Group();
+    mouseTracker: MouseTracker;
 
-    // create meshes
-    let mesh = buildSquareMesh(new Vector2(-10, -10), 20);
+    grid: THREE.Object3D;
+    workingMesh: THREE.Group;
+    nearVertexPoint: FastPoint;
+    tempVertexPoint: FastPoint;
+    selectedVertexPoint: FastPoint;
 
-    workingMesh.add(meshToThree(mesh));
+    constructor(canvas: HTMLCanvasElement) {
+        const {renderer, scene, camera, viewHeight, viewWidth} = DrawMesh2D.initThree(canvas);
 
-    let nearVertexIndex = -1;
-    const nearVertexPoint = new FastPoint();
-    nearVertexPoint.material.color.set(0xff0000);
-    nearVertexPoint.material.size = 12;
-    nearVertexPoint.object.renderOrder = 1;
+        this.renderer = renderer;
+        this.scene = scene;
+        this.camera = camera;
 
-    let selectedVertexIndex = 0;
-    const selectedVertexPoint = new FastPoint(mesh.getVertexPosition(selectedVertexIndex));
-    selectedVertexPoint.material.color.set(0x00ff00);
-    selectedVertexPoint.material.size = 10;
-    selectedVertexPoint.object.renderOrder = 2;
+        this.mesh = buildSquareMesh(new Vector2(-10, -10), 20);
+        this.nearVertexIndex = -1;
+        this.tempVertexIndex = -1;
+        this.selectedVertexIndex = 0;
 
-    scene.add(grid, workingMesh, nearVertexPoint.object, selectedVertexPoint.object);
-    renderer.render(scene, camera);
+        this.grid = buildGrid(viewWidth, viewHeight);
+        this.workingMesh = new THREE.Group();
+        this.workingMesh.add(this.mesh.toThree());
 
-    const raycaster = new THREE.Raycaster();
-    const mousePos = new THREE.Vector2();
-    window.addEventListener('mousemove', (event: MouseEvent) => {
-        const ndcMousePos = getNDCMousePos(canvas, event.clientX, event.clientY);
-        raycaster.setFromCamera(
-            ndcMousePos, 
-            camera
+        this.mouseTracker = new MouseTracker(this.camera, this.grid);
+        this.mouseTracker.startTracking();
+
+        this.nearVertexPoint = new FastPoint();
+        this.nearVertexPoint.material.color.set(0xff0000);
+        this.nearVertexPoint.material.size = 12;
+        this.nearVertexPoint.object.renderOrder = 1;
+
+        this.tempVertexPoint = new FastPoint();
+        this.tempVertexPoint.material.color.set(0xffff00);
+        this.tempVertexPoint.material.size = 12;
+        this.nearVertexPoint.object.renderOrder = 1;
+
+        this.selectedVertexPoint = new FastPoint(this.mesh.getVertexPosition(this.selectedVertexIndex));
+        this.selectedVertexPoint.material.color.set(0x00ff00);
+        this.selectedVertexPoint.material.size = 10;
+        this.selectedVertexPoint.object.renderOrder = 2;
+
+        this.scene.add(
+            this.grid,
+            this.workingMesh,
+            this.nearVertexPoint.object,
+            this.selectedVertexPoint.object
         );
+    }
 
-        const [intersection] = raycaster.intersectObject(grid, false);
-        if (intersection) {
-            mousePos.set(intersection.point.x, intersection.point.y);
+    start = () => {
+        this.initEventListeners();
+        this.render();
+    }
 
-            const {index, position, distanceSquared} = mesh.findNearestVertex(mousePos);
-            if (distanceSquared < 1) {
-                console.log('Near vertex');
-                const isSelectedVertex = position.equals(selectedVertexPoint.getPosition());
+    render = () => {
+        this.renderer.render(this.scene, this.camera);
+    }
 
-                selectedVertexPoint.material.size = isSelectedVertex ? 12 : 10;
-                nearVertexPoint.updatePosition(position);
-                nearVertexIndex = index;
-            } else {
-                console.log('Not near vertex');
-                selectedVertexPoint.material.size = 10;
-                nearVertexPoint.hide();
-                nearVertexIndex = -1;
-            }
+    initEventListeners = () => {
+        this.mouseTracker.onMouseMove(this.onMouseMove);
+    }
 
-            renderer.render(scene, camera);
+    onMouseMove = (mousePos: Vector2) => {
+        const {index, position, distanceSquared} = this.mesh.findNearestVertex(mousePos);
+        if (distanceSquared < 1) {
+            console.log('Near vertex');
+            const isSelectedVertex = position.equals(this.selectedVertexPoint.getPosition());
+
+            this.selectedVertexPoint.material.size = isSelectedVertex ? 12 : 10;
+            this.nearVertexPoint.updatePosition(position);
+            this.nearVertexIndex = index;
+        } else {
+            console.log('Not near vertex');
+            this.selectedVertexPoint.material.size = 10;
+            this.nearVertexPoint.hide();
+            this.nearVertexIndex = -1;
         }
-    });
+
+        this.render();
+    }
+
+    static initThree(canvas: HTMLCanvasElement): ThreeContext {
+        const renderer = new THREE.WebGLRenderer({
+            antialias: false, 
+            canvas
+        });
+
+        renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+
+        const aspect = canvas.clientWidth / canvas.clientHeight;
+        const desiredHalfHeight = 20;
+        const desiredHalfWidth = desiredHalfHeight * aspect;
+        const camera = new THREE.OrthographicCamera(
+            -desiredHalfWidth, 
+            desiredHalfWidth, 
+            desiredHalfHeight, 
+            -desiredHalfHeight, 
+            1, 
+            1000);
+        camera.position.set(0, 0, 5);
+        camera.lookAt(0, 0, 0);
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffffff);
+
+        return {
+            renderer,
+            camera,
+            scene,
+            viewWidth: desiredHalfWidth * 2,
+            viewHeight: desiredHalfHeight * 2
+        }
+    }
 
     // canvas.addEventListener('click', (event) => {
     //     if (event.shiftKey) {
     //         // adding/connecting a vertex
 
+    //         if (tempVertexPos === null) {
+    //             // haven't started creating a triangle, so this is all temporary
+    //             if (nearVertexIndex === -1) {
+    //                 // not near a vertex, create a TEMPORARY one
+    //                 tempVertexPos = mousePos.clone();
+
+    //                 tempVertexPoint.updatePosition(tempVertexPos);
+
+    //                 // create a dotted line from selected to this temp vertex
+    //             }
+    //         }
+
     //         if (nearVertexIndex === -1) {
     //             // not near any point, so add a new vertex
     //             const newVertexIndex = mesh.insertVertex(mousePos);
-    //             mesh.insertEdge(selectedVertexIndex, newVertexIndex);
+    //             // mesh.insertEdge(selectedVertexIndex, newVertexIndex);
 
     //             selectedVertexIndex = newVertexIndex;
     //             selectedVertexPoint.updatePosition(mousePos);
@@ -100,6 +176,53 @@ export default function initDrawMesh() {
 
     //     renderer.render(scene, camera);
     // });
+}
+
+class MouseTracker {
+    camera: THREE.Camera;
+    grid: THREE.Object3D;
+
+    raycaster: THREE.Raycaster;
+
+    mousePos: Vector2;
+
+    mousePosHandler?: (mousePos: Vector2) => void;
+
+    constructor(camera: THREE.Camera, grid: THREE.Object3D) {
+        this.camera = camera;
+        this.grid = grid;
+
+        this.raycaster = new THREE.Raycaster();
+        this.mousePos = new Vector2(0, 0);
+    }
+
+    startTracking = () => {
+        window.addEventListener('mousemove', this._onMouseMoveEventHandler);
+    }
+
+    onMouseMove = (mousePosHandler: (mousePos: Vector2) => void) => {
+        if (this.mousePosHandler) {
+            throw new Error('Already defined');
+        }
+
+        this.mousePosHandler = mousePosHandler;
+    }
+
+    _onMouseMoveEventHandler = (event: MouseEvent) => {
+        const ndcMousePos = getNDCMousePos(canvas, event.clientX, event.clientY);
+        this.raycaster.setFromCamera(
+            ndcMousePos, 
+            this.camera
+        );
+
+        const [intersection] = this.raycaster.intersectObject(this.grid, false);
+        if (intersection) {
+            this.mousePos.set(intersection.point.x, intersection.point.y);
+            if (this.mousePosHandler) {
+                this.mousePosHandler(this.mousePos);
+            }
+        }
+    }
 }
 
 class FastPoint {
@@ -182,37 +305,6 @@ function getNDCMousePos(canvas: HTMLCanvasElement, mouseX: number, mouseY: numbe
         return new THREE.Vector2(xNorm, yNorm);
 }
 
-function meshToThree(mesh: TriangleMesh): THREE.Group {
-    const {vertex, index} = mesh.getVertexAndIndexArrays();
-
-    const geometry = new THREE.BufferGeometry()
-        .setAttribute('position', new THREE.Float32BufferAttribute(vertex, 3))
-        .setIndex(index);
-
-    const points = new THREE.Points(
-        geometry,
-        new THREE.PointsMaterial({
-            sizeAttenuation: false,
-            color: 0xffffff,
-            size: 10
-        })
-    );
-
-
-    const meshObj = new THREE.Mesh(
-        geometry,
-        new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true})
-    );
-
-
-    const threeObj = new THREE.Group();
-    threeObj.add(points);
-    threeObj.add(meshObj);
-
-    return threeObj;
-}
-
-
 function buildSquareMesh(pos: Vector2, sideL: number): TriangleMesh {
     const minX = pos.x;
     const maxX = pos.x + sideL;
@@ -239,37 +331,8 @@ type ThreeContext = {
     viewHeight: number
 };
 
-function initThree(canvas: HTMLCanvasElement): ThreeContext {
-    const renderer = new THREE.WebGLRenderer({
-        antialias: false, 
-        canvas
-    });
+// initDrawMesh();
+const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
+const prog = new DrawMesh2D(canvas);
+prog.start();
 
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-
-    const aspect = canvas.clientWidth / canvas.clientHeight;
-    const desiredHalfHeight = 20;
-    const desiredHalfWidth = desiredHalfHeight * aspect;
-    const camera = new THREE.OrthographicCamera(
-        -desiredHalfWidth, 
-        desiredHalfWidth, 
-        desiredHalfHeight, 
-        -desiredHalfHeight, 
-        1, 
-        1000);
-    camera.position.set(0, 0, 5);
-    camera.lookAt(0, 0, 0);
-
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
-
-    return {
-        renderer,
-        camera,
-        scene,
-        viewWidth: desiredHalfWidth * 2,
-        viewHeight: desiredHalfHeight * 2
-    }
-}
-
-initDrawMesh();

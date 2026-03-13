@@ -176,6 +176,34 @@ export default class TriangleMesh {
     //     return newMesh;
     // }
 
+    toThree(): THREE.Group {
+        const {vertex, index} = this.getVertexAndIndexArrays();
+
+        const geometry = new THREE.BufferGeometry()
+            .setAttribute('position', new THREE.Float32BufferAttribute(vertex, 3))
+            .setIndex(index);
+
+        const points = new THREE.Points(
+            geometry,
+            new THREE.PointsMaterial({
+                sizeAttenuation: false,
+                color: 0xffffff,
+                size: 10
+            })
+        );
+
+        const meshObj = new THREE.Mesh(
+            geometry,
+            new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true})
+        );
+
+        const threeObj = new THREE.Group();
+        threeObj.add(points);
+        threeObj.add(meshObj);
+
+        return threeObj;
+    }
+
     printDebug() {
         console.table(this.vertices.map((v) => ({vertex: `(${v.x}, ${v.y})`})));
         console.table(this.triangles.map(([v1, v2, v3]) => ({edge: `(${v1}, ${v2}, ${v3})`})));
