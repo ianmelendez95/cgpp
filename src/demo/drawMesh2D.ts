@@ -5,6 +5,8 @@ import _ from 'lodash';
 import TriangleMesh from '../mesh/TriangleMesh';
 
 class DrawMesh2D {
+    canvas: HTMLCanvasElement;
+
     scene: THREE.Scene;
     renderer: THREE.WebGLRenderer;
     camera: THREE.Camera;
@@ -23,7 +25,9 @@ class DrawMesh2D {
     selectedVertexPoint: FastPoint;
 
     constructor(canvas: HTMLCanvasElement) {
-        const {renderer, scene, camera, viewHeight, viewWidth} = DrawMesh2D.initThree(canvas);
+        this.canvas = canvas;
+
+        const {renderer, scene, camera, viewHeight, viewWidth} = DrawMesh2D.initThree(this.canvas);
 
         this.renderer = renderer;
         this.scene = scene;
@@ -39,7 +43,6 @@ class DrawMesh2D {
         this.workingMesh.add(this.mesh.toThree());
 
         this.mouseTracker = new MouseTracker(canvas, this.camera, this.grid);
-        this.mouseTracker.startTracking();
 
         this.nearVertexPoint = new FastPoint();
         this.nearVertexPoint.material.color.set(0xff0000);
@@ -74,11 +77,22 @@ class DrawMesh2D {
     }
 
     initEventListeners = () => {
-        this.mouseTracker.onMouseMove(this.updateNearVertex);
+        this.canvas.addEventListener('mousemove', (event: MouseEvent) => {
+            this.mouseTracker.updateWithMouseMove(event);
+            this.updateNearVertex();
+        });
+
+        this.canvas.addEventListener('click', (event: MouseEvent) => {
+            if (event.shiftKey) {
+                this.handleShiftClick();
+            } else {
+                this.handleClick();
+            }
+        })
     }
 
-    updateNearVertex = (mousePos: Vector2) => {
-        const {index, position, distanceSquared} = this.mesh.findNearestVertex(mousePos);
+    updateNearVertex = () => {
+        const {index, position, distanceSquared} = this.mesh.findNearestVertex(this.mouseTracker.mousePos);
         if (distanceSquared < 1) {
             if (index === this.nearVertexIndex) {
                 // same near vertex, nothing to do
@@ -104,6 +118,14 @@ class DrawMesh2D {
             this.nearVertexIndex = -1;
             this.render();
         }
+    }
+
+    handleClick = () => {
+
+    }
+
+    handleShiftClick = () => {
+
     }
 
     static initThree(canvas: HTMLCanvasElement): ThreeContext {
@@ -189,50 +211,33 @@ class DrawMesh2D {
 }
 
 class MouseTracker {
-    canvas: HTMLCanvasElement;
-    camera: THREE.Camera;
-    grid: THREE.Object3D;
+    _canvas: HTMLCanvasElement;
+    _camera: THREE.Camera;
+    _grid: THREE.Object3D;
 
-    raycaster: THREE.Raycaster;
+    _raycaster: THREE.Raycaster;
 
     mousePos: Vector2;
 
-    mousePosHandler?: (mousePos: Vector2) => void;
-
     constructor(canvas: HTMLCanvasElement, camera: THREE.Camera, grid: THREE.Object3D) {
-        this.canvas = canvas;
-        this.camera = camera;
-        this.grid = grid;
+        this._canvas = canvas;
+        this._camera = camera;
+        this._grid = grid;
 
-        this.raycaster = new THREE.Raycaster();
+        this._raycaster = new THREE.Raycaster();
         this.mousePos = new Vector2(0, 0);
     }
 
-    startTracking = () => {
-        this.canvas.addEventListener('mousemove', this._onMouseMoveEventHandler);
-    }
-
-    onMouseMove = (mousePosHandler: (mousePos: Vector2) => void) => {
-        if (this.mousePosHandler) {
-            throw new Error('Already defined');
-        }
-
-        this.mousePosHandler = mousePosHandler;
-    }
-
-    _onMouseMoveEventHandler = (event: MouseEvent) => {
+    updateWithMouseMove = (event: MouseEvent) => {
         const ndcMousePos = getNDCMousePos(canvas, event.clientX, event.clientY);
-        this.raycaster.setFromCamera(
+        this._raycaster.setFromCamera(
             ndcMousePos, 
-            this.camera
+            this._camera
         );
 
-        const [intersection] = this.raycaster.intersectObject(this.grid, false);
+        const [intersection] = this._raycaster.intersectObject(this._grid, false);
         if (intersection) {
             this.mousePos.set(intersection.point.x, intersection.point.y);
-            if (this.mousePosHandler) {
-                this.mousePosHandler(this.mousePos);
-            }
         }
     }
 }
