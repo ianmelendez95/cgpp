@@ -74,26 +74,36 @@ class DrawMesh2D {
     }
 
     initEventListeners = () => {
-        this.mouseTracker.onMouseMove(this.onMouseMove);
+        this.mouseTracker.onMouseMove(this.updateNearVertex);
     }
 
-    onMouseMove = (mousePos: Vector2) => {
+    updateNearVertex = (mousePos: Vector2) => {
         const {index, position, distanceSquared} = this.mesh.findNearestVertex(mousePos);
         if (distanceSquared < 1) {
-            console.log('Near vertex');
-            const isSelectedVertex = position.equals(this.selectedVertexPoint.getPosition());
+            if (index === this.nearVertexIndex) {
+                // same near vertex, nothing to do
+                return;
+            }
 
+            console.log('Near new vertex');
+
+            const isSelectedVertex = position.equals(this.selectedVertexPoint.getPosition());
             this.selectedVertexPoint.material.size = isSelectedVertex ? 12 : 10;
-            this.nearVertexPoint.updatePosition(position);
             this.nearVertexIndex = index;
+            this.nearVertexPoint.updatePosition(position);
+            this.nearVertexPoint.show();
+            this.render();
         } else {
+            if (this.nearVertexIndex === -1) {
+                return;
+            }
+
             console.log('Not near vertex');
             this.selectedVertexPoint.material.size = 10;
             this.nearVertexPoint.hide();
             this.nearVertexIndex = -1;
+            this.render();
         }
-
-        this.render();
     }
 
     static initThree(canvas: HTMLCanvasElement): ThreeContext {
@@ -284,8 +294,17 @@ class FastPoint {
         return !this.object.visible;
     }
 
-    samePosition(that: FastPoint) {
-        return this.buffer[0] === that.buffer[0] && this.buffer[1] === that.buffer[1];
+    samePosition(that: FastPoint | Vector2) {
+        let x, y;
+        if (that instanceof FastPoint) {
+            x = that.buffer[0];
+            y = that.buffer[1];
+        } else {
+            x = that.x;
+            y = that.y;
+        }
+
+        return this.buffer[0] === x && this.buffer[1] === y;
     }
 
     distanceToSquared(position: Vector2) {
