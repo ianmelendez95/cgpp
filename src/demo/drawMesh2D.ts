@@ -38,7 +38,7 @@ class DrawMesh2D {
         this.workingMesh = new THREE.Group();
         this.workingMesh.add(this.mesh.toThree());
 
-        this.mouseTracker = new MouseTracker(this.camera, this.grid);
+        this.mouseTracker = new MouseTracker(canvas, this.camera, this.grid);
         this.mouseTracker.startTracking();
 
         this.nearVertexPoint = new FastPoint();
@@ -189,6 +189,7 @@ class DrawMesh2D {
 }
 
 class MouseTracker {
+    canvas: HTMLCanvasElement;
     camera: THREE.Camera;
     grid: THREE.Object3D;
 
@@ -198,7 +199,8 @@ class MouseTracker {
 
     mousePosHandler?: (mousePos: Vector2) => void;
 
-    constructor(camera: THREE.Camera, grid: THREE.Object3D) {
+    constructor(canvas: HTMLCanvasElement, camera: THREE.Camera, grid: THREE.Object3D) {
+        this.canvas = canvas;
         this.camera = camera;
         this.grid = grid;
 
@@ -207,7 +209,7 @@ class MouseTracker {
     }
 
     startTracking = () => {
-        window.addEventListener('mousemove', this._onMouseMoveEventHandler);
+        this.canvas.addEventListener('mousemove', this._onMouseMoveEventHandler);
     }
 
     onMouseMove = (mousePosHandler: (mousePos: Vector2) => void) => {
