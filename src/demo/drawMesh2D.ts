@@ -121,7 +121,17 @@ class DrawMesh2D {
     }
 
     handleClick = () => {
+        if (this.nearVertexIndex === -1) {
+            // not near a vertex, nothing to do
+            console.log('User clicked, but not near a vertex')
+            return;
+        }
 
+        console.log('User clicked new vertex')
+        this.selectedVertexPoint.copyPosition(this.nearVertexPoint);
+        this.selectedVertexIndex = this.nearVertexIndex;
+        this.selectedVertexPoint.material.size = 12;
+        this.render();
     }
 
     handleShiftClick = () => {
