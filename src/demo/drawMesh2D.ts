@@ -155,7 +155,6 @@ class DrawMesh2D {
         if (_.isNull(this.tempVertexSelected)) {
             // Create/select the temporary vertex
 
-            // TODO: elegantly handle the temp vertex also being an existing vertex
             console.log('Creating temporary vertex');
 
             if (this.nearVertexIndex !== -1) {
@@ -179,14 +178,18 @@ class DrawMesh2D {
                 ? this.mesh.insertVertex(this.mouseTracker.mousePos)
                 : this.nearVertexIndex;
 
-            // TODO: check if triangle exists, and delete it
-
-            console.log('New tri', this.selectedVertexIndex, tempVertexIndex, finalVertexIndex);
-            this.mesh.insertTriangle(
-                this.selectedVertexIndex,
-                tempVertexIndex,
-                finalVertexIndex
-            );
+            const existingTriangle = this.mesh.findTriangle(this.selectedVertexIndex, tempVertexIndex, finalVertexIndex);
+            if (!_.isNull(existingTriangle)) {
+                console.log('Deleting tri', this.selectedVertexIndex, tempVertexIndex, finalVertexIndex);
+                this.mesh.deleteTriangle(existingTriangle);
+            } else {
+                console.log('New tri', this.selectedVertexIndex, tempVertexIndex, finalVertexIndex);
+                this.mesh.insertTriangle(
+                    this.selectedVertexIndex,
+                    tempVertexIndex,
+                    finalVertexIndex
+                );
+            }
 
             this.workingMesh.clear();
             this.workingMesh.add(this.mesh.toThree());

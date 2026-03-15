@@ -1,6 +1,7 @@
 import {Vector2} from 'three';
 import * as THREE from 'three';
 import { deleteElem, deleteIdx } from './arrays';
+import _ from 'lodash';
 
 export default class VertexEdge1DMesh {
     vertices: Vector2[] = [];

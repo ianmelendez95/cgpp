@@ -1,6 +1,7 @@
 import {Vector2} from 'three';
 import * as THREE from 'three';
 import { deleteElem, deleteIdx } from './arrays';
+import _ from 'lodash';
 
 export default class TriangleMesh {
     vertices: Vector2[] = [];
@@ -77,6 +78,18 @@ export default class TriangleMesh {
         this.neighbors[v2].push(triangle);
         this.neighbors[v3].push(triangle);
     }
+
+    // findTriangle(v1: number, v2: number, v3: number): number | null {
+    //     const asArr = _.sortBy([v1, v2, v3]);
+    //     for (const neighbor of this.neighbors[v1]) {
+    //         const sortedVerts = _.sortBy(this.triangles[neighbor]);
+    //         if (_.isEqual(asArr, sortedVerts)) {
+    //             return neighbor;
+    //         }
+    //     }
+
+    //     return null;
+    // }
 
     getNeighborVertices(v: number): number[] {
         return this.getTrianglesAtVertex(v).map(e => this.getOtherVertices(v, e)).flat();
