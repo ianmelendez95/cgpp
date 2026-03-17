@@ -31,13 +31,14 @@ class Pong {
         const {renderer, camera, scene} = this.initThree(this.canvas);
 
         const directional = new THREE.DirectionalLight(SUN_LIGHT_COLOR, 1);
-        directional.position.set(-500, 0, 500);
+        directional.position.set(-100, 100, 250);
         directional.target.position.set(0, 0, 0);
         directional.target.updateMatrixWorld();
+        directional.shadow.camera.far = 500;
         directional.shadow.camera.left = -500;
         directional.shadow.camera.right = 500;
         directional.shadow.camera.top = 250;
-        directional.shadow.camera.bottom = -200;
+        directional.shadow.camera.bottom = -300;
         directional.castShadow = true;
 
         const ambient = new THREE.AmbientLight(AMBIENT_LIGHT_COLOR, 1);
@@ -53,7 +54,10 @@ class Pong {
 
         this.ball = new Ball();
         this.ball.object.position.setX(-50).setY(90);
+        this.ball.object.castShadow = true;
+        this.ball.object.receiveShadow = true;
 
+        const directionalHelper = new THREE.DirectionalLightHelper(directional);
         const cameraHelper = new THREE.CameraHelper(directional.shadow.camera);
 
         this.scene.add(
@@ -64,7 +68,8 @@ class Pong {
             this.court.objects,
             this.ball.object,
 
-            cameraHelper
+            // directionalHelper,
+            // cameraHelper
         );
 
         this.renderLoop = this.renderLoop.bind(this);
@@ -156,7 +161,7 @@ class Court {
         const eastWestGeometry = new THREE.BoxGeometry(this.wallThickness, this.courtHeight, this.wallHeight);
         const floorGeometry = new THREE.BoxGeometry(this.courtWidth, this.courtHeight, this.floorDepth);
         const wallMaterial = new THREE.MeshPhongMaterial({color: this.wallColor});
-        const floorMaterial = new THREE.MeshBasicMaterial({color: this.floorColor});
+        const floorMaterial = new THREE.MeshPhongMaterial({color: this.floorColor});
 
         this.northWall = new THREE.Mesh(northSouthGeometry, wallMaterial);
         this.southWall = new THREE.Mesh(northSouthGeometry, wallMaterial);
@@ -168,6 +173,13 @@ class Court {
 
         this.eastWall.position.setX(this.courtWidth / 2);
         this.westWall.position.setX(-(this.courtWidth / 2));
+
+        this.northWall.castShadow = true;
+        this.eastWall.castShadow = true;
+        this.eastWall.receiveShadow = true;
+        this.southWall.castShadow = true;
+        this.southWall.receiveShadow = true;
+        this.westWall.castShadow = true;
 
         this.walls = new THREE.Group();
         this.walls.add(
