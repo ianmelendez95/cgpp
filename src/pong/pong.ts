@@ -3,17 +3,24 @@ import * as THREE from 'three';
 export default function pong() {
 }
 
+const BACKGROUND_COLOR = 0x2e2e2e;
+const COURT_FLOOR_COLOR = 0x3fc1c9;
+const COURT_WALL_COLOR = 0x3fc1c9;
+const PADDLE_COLOR = 0xfc5185;
+
 class Pong { 
     readonly scene: THREE.Scene;
     readonly renderer: THREE.WebGLRenderer;
     readonly camera: THREE.Camera;
+
+    readonly background: number = BACKGROUND_COLOR;
 
     readonly court: Court;
     readonly playerPaddle: Paddle;
 
     constructor() {
         const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
-        const {renderer, camera, scene} = Pong.initThree(canvas);
+        const {renderer, camera, scene} = this.initThree(canvas);
 
         this.renderer = renderer;
         this.scene = scene;
@@ -34,7 +41,7 @@ class Pong {
         this.renderer.render(this.scene, this.camera);
     }
 
-    static initThree(canvas: HTMLCanvasElement) {
+    initThree(canvas: HTMLCanvasElement) {
         const renderer = new THREE.WebGLRenderer({
             antialias: false, 
             canvas
@@ -46,12 +53,13 @@ class Pong {
             50,
             canvas.clientWidth / canvas.clientHeight,
             1, 
-            1000);
+            1000
+        );
         camera.position.set(0, 0, 500);
         camera.lookAt(0, 0, 0);
 
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x2e2e2e);
+        scene.background = new THREE.Color(this.background);
 
         return {
             renderer,
@@ -75,11 +83,12 @@ class Court {
 
     wallThickness: number = 5;
     wallHeight: number = 20;
+    wallColor: number = COURT_WALL_COLOR;
 
     constructor () {
         const northSouthGeometry = new THREE.BoxGeometry(this.courtWidth, this.wallThickness, this.wallHeight);
         const eastWestGeometry = new THREE.BoxGeometry(this.wallThickness, this.courtHeight, this.wallHeight);
-        const wallMaterial = new THREE.MeshBasicMaterial({color: 0xffffff});
+        const wallMaterial = new THREE.MeshBasicMaterial({color: this.wallColor});
 
         this.northWall = new THREE.Mesh(northSouthGeometry, wallMaterial);
         this.southWall = new THREE.Mesh(northSouthGeometry, wallMaterial);
@@ -110,9 +119,11 @@ class Paddle {
     height: number = 100;
     depth: number = 10;
 
+    paddleColor: number = PADDLE_COLOR;
+
     constructor () {
         const paddleGeometry = new THREE.BoxGeometry(this.width, this.height, this.depth);
-        const paddleMaterial = new THREE.MeshBasicMaterial({color: 0xffffff});
+        const paddleMaterial = new THREE.MeshBasicMaterial({color: this.paddleColor});
         this.object = new THREE.Mesh(paddleGeometry, paddleMaterial);
         this.position = this.object.position;
     }
