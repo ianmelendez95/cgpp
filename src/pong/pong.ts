@@ -13,6 +13,7 @@ const SUN_LIGHT_COLOR = 0xffffff;
 const AMBIENT_LIGHT_COLOR = 0xffffff;
 
 class Pong { 
+    readonly canvas: HTMLCanvasElement;
     readonly scene: THREE.Scene;
     readonly renderer: THREE.WebGLRenderer;
     readonly camera: THREE.Camera;
@@ -24,8 +25,8 @@ class Pong {
     readonly ball: Ball;
 
     constructor() {
-        const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
-        const {renderer, camera, scene} = this.initThree(canvas);
+        this.canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
+        const {renderer, camera, scene} = this.initThree(this.canvas);
 
         const directional = new THREE.DirectionalLight(SUN_LIGHT_COLOR, 1);
         directional.position.set(-500, 0, 500);
@@ -63,10 +64,20 @@ class Pong {
 
             cameraHelper
         );
+
+        this.renderLoop = this.renderLoop.bind(this);
     }
 
     start() {
+        new CameraPanHelper(this.canvas, this.camera).start();
+
+        window.requestAnimationFrame(this.renderLoop);
+    }
+
+    renderLoop() {
         this.renderer.render(this.scene, this.camera);
+
+        window.requestAnimationFrame(this.renderLoop);
     }
 
     initThree(canvas: HTMLCanvasElement) {
@@ -96,7 +107,35 @@ class Pong {
             scene
         }
     }
+}
 
+const MouseButton = {
+    Left: 1,
+    Right: 2,
+    Wheel: 4,
+    Back: 8,
+    Forward: 16
+} as const
+
+class CameraPanHelper {
+    readonly canvas: HTMLCanvasElement;
+    readonly camera: THREE.Camera;
+
+    constructor (canvas: HTMLCanvasElement, camera: THREE.Camera) {
+        this.canvas = canvas;
+        this.camera = camera;
+    }
+
+    start() {
+        this.canvas.addEventListener('mousemove', (event: MouseEvent) => {
+            console.log('Mouse event')
+            if (event.buttons & MouseButton.Left) {
+                console.log('Panning camera')
+                this.camera.position.setX(this.camera.position.x - event.movementX);
+                this.camera.position.setY(this.camera.position.y + event.movementY);
+            }
+        })
+    }
 }
 
 class Ball {
