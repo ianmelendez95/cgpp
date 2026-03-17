@@ -1,2 +1,2 @@
 
-window.location.assign('/demo/drawMesh.html');
+window.location.assign('/demo/pong.html');
