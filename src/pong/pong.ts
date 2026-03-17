@@ -22,6 +22,8 @@ class Pong {
         const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
         const {renderer, camera, scene} = this.initThree(canvas);
 
+        const light = new THREE.AmbientLight(0xffffff, 1);
+
         this.renderer = renderer;
         this.scene = scene;
         this.camera = camera;
@@ -32,6 +34,7 @@ class Pong {
         this.court = new Court();
 
         this.scene.add(
+            light,
             this.playerPaddle.object,
             this.court.walls
         );
