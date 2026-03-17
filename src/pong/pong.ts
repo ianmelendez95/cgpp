@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+// @ts-ignore
+import {OrbitControls} from 'three/addons/controls/OrbitControls';
 
 export default function pong() {
 }
@@ -69,7 +71,7 @@ class Pong {
     }
 
     start() {
-        new CameraPanHelper(this.canvas, this.camera).start();
+        new OrbitControls(this.camera, this.renderer.domElement);
 
         window.requestAnimationFrame(this.renderLoop);
     }
@@ -106,35 +108,6 @@ class Pong {
             camera,
             scene
         }
-    }
-}
-
-const MouseButton = {
-    Left: 1,
-    Right: 2,
-    Wheel: 4,
-    Back: 8,
-    Forward: 16
-} as const
-
-class CameraPanHelper {
-    readonly canvas: HTMLCanvasElement;
-    readonly camera: THREE.Camera;
-
-    constructor (canvas: HTMLCanvasElement, camera: THREE.Camera) {
-        this.canvas = canvas;
-        this.camera = camera;
-    }
-
-    start() {
-        this.canvas.addEventListener('mousemove', (event: MouseEvent) => {
-            console.log('Mouse event')
-            if (event.buttons & MouseButton.Left) {
-                console.log('Panning camera')
-                this.camera.position.setX(this.camera.position.x - event.movementX);
-                this.camera.position.setY(this.camera.position.y + event.movementY);
-            }
-        })
     }
 }
 
@@ -237,8 +210,49 @@ class Paddle {
         this.position = this.object.position;
         this.position.setZ(this.depth / 2);
     }
-
-
 }
 
 new Pong().start();
+
+// const MouseButton = {
+//     Left: 1,
+//     Right: 2,
+//     Wheel: 4,
+//     Back: 8,
+//     Forward: 16
+// } as const
+
+// class CameraPanHelper {
+//     readonly canvas: HTMLCanvasElement;
+//     readonly camera: THREE.Camera;
+//     readonly cameraDir: THREE.Vector3 = new THREE.Vector3();
+
+//     constructor (canvas: HTMLCanvasElement, camera: THREE.Camera) {
+//         this.canvas = canvas;
+//         this.camera = camera;
+//     }
+
+//     start() {
+//         this.canvas.addEventListener('mousemove', (event: MouseEvent) => {
+//             if (event.buttons & MouseButton.Left) {
+//                 this.camera.position.setX(this.camera.position.x - event.movementX);
+//                 this.camera.position.setY(this.camera.position.y + event.movementY);
+//             } else if (event.buttons & MouseButton.Wheel) {
+//                 this.camera.rotation.y += event.movementX / 1000;
+//                 this.camera.rotation.x += event.movementY / 1000;
+//             }
+//         });
+
+//         this.canvas.addEventListener('wheel', (event: WheelEvent) => {
+//             console.log('Dollying camera')
+//             const cameraMove = this.getCameraDir().multiplyScalar(-event.deltaY);
+
+//             this.camera.position.add(cameraMove);
+//         });
+//     }
+
+//     getCameraDir(): THREE.Vector3 {
+//         this.camera.getWorldDirection(this.cameraDir);
+//         return this.cameraDir.clone();
+//     }
+// }
