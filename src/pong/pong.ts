@@ -21,13 +21,14 @@ class Pong {
 
     readonly court: Court;
     readonly playerPaddle: Paddle;
+    readonly ball: Ball;
 
     constructor() {
         const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
         const {renderer, camera, scene} = this.initThree(canvas);
 
         const directional = new THREE.DirectionalLight(SUN_LIGHT_COLOR, 1);
-        directional.position.set(-200, 300, 200);
+        directional.position.set(0, 0, 200);
         directional.target.position.set(0, 0, 0);
         const ambient = new THREE.AmbientLight(AMBIENT_LIGHT_COLOR, 1);
 
@@ -40,12 +41,16 @@ class Pong {
 
         this.court = new Court();
 
+        this.ball = new Ball();
+        this.ball.object.position.setX(-50).setY(90);
+
         this.scene.add(
             ambient,
             directional,
             directional.target,
             this.playerPaddle.object,
-            this.court.objects
+            this.court.objects,
+            this.ball.object
         );
     }
 
@@ -80,6 +85,25 @@ class Pong {
         }
     }
 
+}
+
+class Ball {
+    readonly object: THREE.Object3D;
+
+    readonly width: number = 10;
+    readonly height: number = 10;
+    readonly depth: number = 10;
+
+    readonly color: number = 0xffffff;
+
+    constructor () {
+        this.object = new THREE.Mesh(
+            new THREE.BoxGeometry(this.width, this.height, this.depth),
+            new THREE.MeshPhongMaterial({color: this.color})
+        )
+
+        this.object.position.setZ(this.depth / 2);
+    }
 }
 
 class Court {
