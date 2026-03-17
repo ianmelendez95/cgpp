@@ -28,8 +28,15 @@ class Pong {
         const {renderer, camera, scene} = this.initThree(canvas);
 
         const directional = new THREE.DirectionalLight(SUN_LIGHT_COLOR, 1);
-        directional.position.set(0, 0, 200);
+        directional.position.set(-500, 0, 500);
         directional.target.position.set(0, 0, 0);
+        directional.target.updateMatrixWorld();
+        directional.shadow.camera.left = -500;
+        directional.shadow.camera.right = 500;
+        directional.shadow.camera.top = 250;
+        directional.shadow.camera.bottom = -200;
+        directional.castShadow = true;
+
         const ambient = new THREE.AmbientLight(AMBIENT_LIGHT_COLOR, 1);
 
         this.renderer = renderer;
@@ -44,13 +51,17 @@ class Pong {
         this.ball = new Ball();
         this.ball.object.position.setX(-50).setY(90);
 
+        const cameraHelper = new THREE.CameraHelper(directional.shadow.camera);
+
         this.scene.add(
             ambient,
             directional,
             directional.target,
             this.playerPaddle.object,
             this.court.objects,
-            this.ball.object
+            this.ball.object,
+
+            cameraHelper
         );
     }
 
@@ -63,6 +74,7 @@ class Pong {
             antialias: false, 
             canvas
         });
+        renderer.shadowMap.enabled = true;
 
         renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
@@ -70,9 +82,9 @@ class Pong {
             50,
             canvas.clientWidth / canvas.clientHeight,
             1, 
-            1000
+            10000
         );
-        camera.position.set(0, 0, 500);
+        camera.position.set(0, 0, 1000);
         camera.lookAt(0, 0, 0);
 
         const scene = new THREE.Scene();
@@ -156,6 +168,7 @@ class Court {
 
         this.floor = new THREE.Mesh(floorGeometry, floorMaterial);
         this.floor.position.setZ(-(this.floorDepth / 2));
+        this.floor.receiveShadow = true;
 
         this.objects = new THREE.Group();
         this.objects.add(this.walls, this.floor);
@@ -178,7 +191,10 @@ class Paddle {
         const paddleMaterial = new THREE.MeshPhongMaterial({
             color: this.paddleColor
         })
+
         this.object = new THREE.Mesh(paddleGeometry, paddleMaterial);
+        this.object.castShadow = true;
+
         this.position = this.object.position;
         this.position.setZ(this.depth / 2);
     }
