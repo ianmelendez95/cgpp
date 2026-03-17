@@ -8,6 +8,7 @@ class Pong {
     readonly renderer: THREE.WebGLRenderer;
     readonly camera: THREE.Camera;
 
+    readonly court: Court;
     readonly playerPaddle: Paddle;
 
     constructor() {
@@ -21,10 +22,15 @@ class Pong {
         this.playerPaddle = new Paddle();
         this.playerPaddle.position.set(-300, 0, 0);
 
+        this.court = new Court();
+
+        this.scene.add(
+            this.playerPaddle.object,
+            this.court.walls
+        );
     }
 
     start() {
-        this.scene.add(this.playerPaddle.object);
         this.renderer.render(this.scene, this.camera);
     }
 
@@ -56,12 +62,56 @@ class Pong {
 
 }
 
+class Court {
+    readonly walls: THREE.Group;
+
+    readonly northWall: THREE.Object3D;
+    readonly southWall: THREE.Object3D;
+    readonly eastWall: THREE.Object3D;
+    readonly westWall: THREE.Object3D;
+
+    courtWidth: number = 800;
+    courtHeight: number = 400;
+
+    wallThickness: number = 5;
+    wallHeight: number = 20;
+
+    constructor () {
+        const northSouthGeometry = new THREE.BoxGeometry(this.courtWidth, this.wallThickness, this.wallHeight);
+        const eastWestGeometry = new THREE.BoxGeometry(this.wallThickness, this.courtHeight, this.wallHeight);
+        const wallMaterial = new THREE.MeshBasicMaterial({color: 0xffffff});
+
+        this.northWall = new THREE.Mesh(northSouthGeometry, wallMaterial);
+        this.southWall = new THREE.Mesh(northSouthGeometry, wallMaterial);
+        this.eastWall = new THREE.Mesh(eastWestGeometry, wallMaterial);
+        this.westWall = new THREE.Mesh(eastWestGeometry, wallMaterial);
+
+        this.northWall.position.setY(this.courtHeight / 2);
+        this.southWall.position.setY(-(this.courtHeight / 2));
+
+        this.eastWall.position.setX(this.courtWidth / 2);
+        this.westWall.position.setX(-(this.courtWidth / 2));
+
+        this.walls = new THREE.Group();
+        this.walls.add(
+            this.northWall,
+            this.eastWall,
+            this.southWall,
+            this.westWall
+        );
+    }
+}
+
 class Paddle {
     readonly object: THREE.Object3D;
     readonly position: THREE.Vector3;
+    
+    width: number = 10;
+    height: number = 100;
+    depth: number = 10;
 
     constructor () {
-        const paddleGeometry = new THREE.BoxGeometry(10, 100, 10);
+        const paddleGeometry = new THREE.BoxGeometry(this.width, this.height, this.depth);
         const paddleMaterial = new THREE.MeshBasicMaterial({color: 0xffffff});
         this.object = new THREE.Mesh(paddleGeometry, paddleMaterial);
         this.position = this.object.position;
