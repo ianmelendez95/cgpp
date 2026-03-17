@@ -8,6 +8,10 @@ const COURT_FLOOR_COLOR = 0x555555;
 const COURT_WALL_COLOR = 0x3fc1c9;
 const PADDLE_COLOR = 0xfc5185;
 
+// const SUN_LIGHT_COLOR = 0x409cff;
+const SUN_LIGHT_COLOR = 0xffffff;
+const AMBIENT_LIGHT_COLOR = 0xffffff;
+
 class Pong { 
     readonly scene: THREE.Scene;
     readonly renderer: THREE.WebGLRenderer;
@@ -22,7 +26,10 @@ class Pong {
         const canvas = document.getElementById('cgpp-canvas') as HTMLCanvasElement;
         const {renderer, camera, scene} = this.initThree(canvas);
 
-        const light = new THREE.AmbientLight(0xffffff, 1);
+        const directional = new THREE.DirectionalLight(SUN_LIGHT_COLOR, 1);
+        directional.position.set(-200, 300, 200);
+        directional.target.position.set(0, 0, 0);
+        const ambient = new THREE.AmbientLight(AMBIENT_LIGHT_COLOR, 1);
 
         this.renderer = renderer;
         this.scene = scene;
@@ -34,7 +41,9 @@ class Pong {
         this.court = new Court();
 
         this.scene.add(
-            light,
+            ambient,
+            directional,
+            directional.target,
             this.playerPaddle.object,
             this.court.objects
         );
@@ -98,7 +107,7 @@ class Court {
         const northSouthGeometry = new THREE.BoxGeometry(this.courtWidth, this.wallThickness, this.wallHeight);
         const eastWestGeometry = new THREE.BoxGeometry(this.wallThickness, this.courtHeight, this.wallHeight);
         const floorGeometry = new THREE.BoxGeometry(this.courtWidth, this.courtHeight, this.floorDepth);
-        const wallMaterial = new THREE.MeshBasicMaterial({color: this.wallColor});
+        const wallMaterial = new THREE.MeshPhongMaterial({color: this.wallColor});
         const floorMaterial = new THREE.MeshBasicMaterial({color: this.floorColor});
 
         this.northWall = new THREE.Mesh(northSouthGeometry, wallMaterial);
@@ -143,7 +152,7 @@ class Paddle {
         const paddleGeometry = new THREE.BoxGeometry(this.width, this.height, this.depth);
         // const paddleMaterial = new THREE.MeshBasicMaterial({color: this.paddleColor});
         const paddleMaterial = new THREE.MeshPhongMaterial({
-            color: 0xffffff
+            color: this.paddleColor
         })
         this.object = new THREE.Mesh(paddleGeometry, paddleMaterial);
         this.position = this.object.position;
