@@ -4,7 +4,7 @@ export default function pong() {
 }
 
 const BACKGROUND_COLOR = 0x2e2e2e;
-const COURT_FLOOR_COLOR = 0x3fc1c9;
+const COURT_FLOOR_COLOR = 0x555555;
 const COURT_WALL_COLOR = 0x3fc1c9;
 const PADDLE_COLOR = 0xfc5185;
 
@@ -29,14 +29,14 @@ class Pong {
         this.camera = camera;
 
         this.playerPaddle = new Paddle();
-        this.playerPaddle.position.set(-300, 0, 0);
+        this.playerPaddle.position.setX(-300);
 
         this.court = new Court();
 
         this.scene.add(
             light,
             this.playerPaddle.object,
-            this.court.walls
+            this.court.objects
         );
     }
 
@@ -74,6 +74,7 @@ class Pong {
 }
 
 class Court {
+    readonly objects: THREE.Group;
     readonly walls: THREE.Group;
 
     readonly northWall: THREE.Object3D;
@@ -81,17 +82,24 @@ class Court {
     readonly eastWall: THREE.Object3D;
     readonly westWall: THREE.Object3D;
 
+    readonly floor: THREE.Object3D;
+
     courtWidth: number = 800;
     courtHeight: number = 400;
 
     wallThickness: number = 5;
     wallHeight: number = 20;
     wallColor: number = COURT_WALL_COLOR;
+    floorColor: number = COURT_FLOOR_COLOR;
+
+    floorDepth: number = 10; // TODO: make floor a plane
 
     constructor () {
         const northSouthGeometry = new THREE.BoxGeometry(this.courtWidth, this.wallThickness, this.wallHeight);
         const eastWestGeometry = new THREE.BoxGeometry(this.wallThickness, this.courtHeight, this.wallHeight);
+        const floorGeometry = new THREE.BoxGeometry(this.courtWidth, this.courtHeight, this.floorDepth);
         const wallMaterial = new THREE.MeshBasicMaterial({color: this.wallColor});
+        const floorMaterial = new THREE.MeshBasicMaterial({color: this.floorColor});
 
         this.northWall = new THREE.Mesh(northSouthGeometry, wallMaterial);
         this.southWall = new THREE.Mesh(northSouthGeometry, wallMaterial);
@@ -111,6 +119,13 @@ class Court {
             this.southWall,
             this.westWall
         );
+        this.walls.position.setZ(this.wallHeight / 2);
+
+        this.floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        this.floor.position.setZ(-(this.floorDepth / 2));
+
+        this.objects = new THREE.Group();
+        this.objects.add(this.walls, this.floor);
     }
 }
 
@@ -126,9 +141,13 @@ class Paddle {
 
     constructor () {
         const paddleGeometry = new THREE.BoxGeometry(this.width, this.height, this.depth);
-        const paddleMaterial = new THREE.MeshBasicMaterial({color: this.paddleColor});
+        // const paddleMaterial = new THREE.MeshBasicMaterial({color: this.paddleColor});
+        const paddleMaterial = new THREE.MeshPhongMaterial({
+            color: 0xffffff
+        })
         this.object = new THREE.Mesh(paddleGeometry, paddleMaterial);
         this.position = this.object.position;
+        this.position.setZ(this.depth / 2);
     }
 
 
