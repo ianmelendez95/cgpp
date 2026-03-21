@@ -39,6 +39,8 @@ class Pong {
         directional.shadow.camera.right = 500;
         directional.shadow.camera.top = 250;
         directional.shadow.camera.bottom = -300;
+        directional.shadow.mapSize.height = 2048;
+        directional.shadow.mapSize.width = 2048;
         directional.castShadow = true;
 
         const ambient = new THREE.AmbientLight(AMBIENT_LIGHT_COLOR, 1);
